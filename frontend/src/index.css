@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Default dark theme */
+    --color-bg: #0F172A;
+    --color-surface: #1E293B;
+    --color-accent: #A855F7;
+    --color-text: #F8FAFC;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Inter', sans-serif; /* assuming we import Inter */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+}

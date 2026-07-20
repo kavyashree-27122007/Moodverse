@@ -1,0 +1,119 @@
+import { NavLink, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import {
+  LayoutDashboard,
+  BarChart3,
+  Users,
+  BookOpen,
+  Bell,
+  Settings,
+  LogOut,
+  Headphones,
+  Film,
+} from 'lucide-react';
+
+const navItems = [
+  { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
+  { icon: BarChart3, label: 'Analytics', to: '/analytics' },
+  { icon: Headphones, label: 'Music', to: '/music' },
+  { icon: Film, label: 'Movies', to: '/movies' },
+  { icon: Users, label: 'Friends', to: '/friends' },
+  { icon: BookOpen, label: 'Journal', to: '/journal' },
+  { icon: Bell, label: 'Notifications', to: '/notifications' },
+  { icon: Settings, label: 'Settings', to: '/settings' },
+];
+
+const Sidebar: React.FC = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <aside className="h-screen w-64 flex flex-col bg-surface/80 backdrop-blur-xl border-r border-white/10 fixed left-0 top-0 z-40">
+      {/* Logo */}
+      <div className="p-6 border-b border-white/10">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-3"
+        >
+          <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/30">
+            <span className="text-white text-lg font-black">M</span>
+          </div>
+          <div>
+            <h1 className="text-white font-bold text-lg leading-none">MoodVerse</h1>
+            <p className="text-white/40 text-xs mt-0.5">Feel Everything</p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {navItems.map((item, i) => (
+          <motion.div
+            key={item.to}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.05 * i }}
+          >
+            <NavLink
+              to={item.to}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
+                  isActive
+                    ? 'bg-accent/20 text-accent border border-accent/30'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <item.icon
+                    size={18}
+                    className={`transition-all ${isActive ? 'text-accent' : 'text-white/40 group-hover:text-white'}`}
+                  />
+                  {item.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active"
+                      className="ml-auto w-1.5 h-1.5 rounded-full bg-accent"
+                    />
+                  )}
+                </>
+              )}
+            </NavLink>
+          </motion.div>
+        ))}
+      </nav>
+
+      {/* User footer */}
+      <div className="p-4 border-t border-white/10">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-full bg-accent/30 flex items-center justify-center flex-shrink-0">
+            <span className="text-accent text-sm font-bold">
+              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+            </span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-white text-sm font-medium truncate">{user?.fullName || 'User'}</p>
+            <p className="text-white/40 text-xs truncate">@{user?.username || 'username'}</p>
+          </div>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/60 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+        >
+          <LogOut size={15} />
+          Sign Out
+        </button>
+      </div>
+    </aside>
+  );
+};
+
+export default Sidebar;
