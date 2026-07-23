@@ -1,127 +1,103 @@
-# MoodVerse
+# MoodVerse 2.0 — NLP-Powered Friend Mood Match, Movie & Music Recommendation Platform
 
-MoodVerse is a modern, AI-powered emotional intelligence platform and mood tracking application. It features "Moody", an interactive, magical emotional companion who guides users through their journey of self-reflection and growth.
+MoodVerse is a production-ready emotional intelligence platform and mood tracking application featuring "Moody", an interactive, animated emotional companion that guides users through self-reflection, real-time social connections, and personalized entertainment recommendations.
 
-## Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Deployment Guide](#deployment-guide)
+## 📖 Documentation Sitemap
 
-## Features
+- [Installation Guide](docs/INSTALLATION.md)
+- [Architecture & Design](docs/ARCHITECTURE.md)
+- [API Reference](docs/API.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Environment Setup](docs/ENV_SETUP.md)
+- [Release Notes (v1.0 RC)](docs/RELEASE_NOTES.md)
+- [Limitations & Future Roadmap](docs/LIMITATIONS.md)
+- [License](LICENSE)
 
-- **Moody – Emotional Companion:** A fully interactive, animated SVG character built from scratch using Framer Motion. Moody blinks, breathes, tracks your cursor, reacts to your moods, and greets you based on the page you're visiting.
-- **AI Psychological Insights:** Analyzes recent mood entries using a powerful AI engine to provide deeply personalized insights and long-term emotional memory tracking.
-- **Mood Tracking & Journaling:** Log daily moods with intensity scales and write journal entries to reflect on your day.
-- **Real-time Social Features:** Connect with friends, see their online status in real-time (via Socket.io), and support each other's mental health journey.
-- **Emotional Memory System:** Moody remembers past interactions, favorite songs, movies, and triggers to provide a highly tailored experience.
-- **Data Export:** Export your complete mood history and AI memory profile as a JSON file at any time for total data ownership.
+---
 
-## Tech Stack
+## ✨ Features
+
+- **Moody – Animated Emotional Companion:** An interactive SVG character built with Framer Motion that blinks, breathes, tracks cursor movement, reacts to user emotions, and offers guidance.
+- **Dynamic Emotion Engine:** Beautiful HSL-tailored color themes and glassmorphism styling that repaints the interface dynamically for 36 supported emotions.
+- **AI Psychological Insights:** Integrates with Google Gemini API to analyze mood history and deliver deep, empathetic psychological breakdowns.
+- **Smart Music & Movie Recommendations:** Curated hits and movie picks with unique YouTube thumbnail posters and one-click Spotify and YouTube trailer links.
+- **Real-Time Social Sync & Chat:** Powered by Socket.io, view live friend mood updates, online statuses, and chat via an unblocked standalone chat area.
+- **Persistent Cloud Database:** Automatic connection to MongoDB Atlas with in-memory fallback for offline resilience.
+- **Session & Chat Memory:** Complete authentication state and chat history saved permanently in `localStorage` across page reloads.
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
 - **Framework:** React 18 with Vite
-- **Styling:** Tailwind CSS + Vanilla CSS for animations
-- **Animations:** Framer Motion (for physics-based SVGs and page transitions)
-- **Routing:** React Router DOM v6
-- **State/API:** Context API, Axios
-- **Icons:** Lucide React
+- **Styling:** Tailwind CSS + Vanilla CSS Token System
+- **Animations:** Framer Motion
+- **Routing:** React Router DOM v6 with code-splitting
+- **State & API:** React Context API, Axios, Socket.io-client
 
 ### Backend
-- **Framework:** Node.js with Express
-- **Database:** MongoDB (via Mongoose)
-- **Real-time:** Socket.io
-- **AI Integration:** Google Gemini API (or configurable LLM)
-- **Authentication:** JWT (JSON Web Tokens)
-- **Security:** Helmet, CORS, bcrypt
+- **Framework:** Node.js with Express & TypeScript
+- **Database:** MongoDB Atlas (Mongoose ORM)
+- **Real-Time Engine:** Socket.io
+- **AI Service:** Google Gemini API Integration
+- **Authentication:** JWT (JSON Web Tokens) & bcryptjs (rounds=12)
 
-## Project Structure
+---
 
-```
-moodverse 2.0/
-├── backend/            # Express.js REST API and Socket.io server
+## 📁 Repository Structure
+
+```text
+Moodverse-NLP-powered-friend-mood-match-movie-and-music-recommendation-platform/
+├── backend/            # Express.js REST API & Socket.io server
 │   ├── src/
-│   │   ├── controllers/# Route controllers (auth, mood, ai, etc.)
-│   │   ├── models/     # Mongoose schemas (User, MoodEntry, EmotionalMemory)
-│   │   ├── routes/     # Express routes
-│   │   └── services/   # AI engine and dataset services
+│   │   ├── config/     # Database setup & environment variables
+│   │   ├── controllers/# Auth, Mood, AI, Friends Controllers
+│   │   ├── models/     # Mongoose Schemas (User, MoodEntry, Memory)
+│   │   ├── routes/     # Express API routes
+│   │   └── services/   # AI Engine & Dataset Service
+│   ├── .env.example
 │   └── package.json
-├── frontend/           # React frontend
+├── frontend/           # React 18 + Vite frontend
 │   ├── src/
-│   │   ├── components/ # Reusable UI components (MoodyMascot, etc.)
-│   │   ├── context/    # React Context (Auth, Theme, Mascot, Socket)
-│   │   ├── pages/      # Application pages (Dashboard, Settings, etc.)
-│   │   └── utils/      # Helpers and utilities
+│   │   ├── components/ # UI components (MoodyMascot, FriendsList, ChatPanel, etc.)
+│   │   ├── context/    # AuthContext, ThemeContext, SocketContext, MascotContext
+│   │   ├── pages/      # Dashboard, Analytics, Music, Movies, Journal, Friends, etc.
+│   │   └── utils/      # Emotions, color tokens, helpers
+│   ├── .env.example
 │   └── package.json
-└── README.md           # This file
+├── docs/               # Technical Documentation (API, Architecture, Deployment)
+├── LICENSE             # MIT License
+└── README.md           # Documentation Overview
 ```
 
-## Installation
+---
 
-### Prerequisites
-- Node.js (v18+)
-- MongoDB running locally or a MongoDB Atlas URI
+## 🚀 Quick Start (Local Setup)
 
-### 1. Clone or Extract the Project
-Open the project directory in your terminal.
+### 1. Clone Repository
+```bash
+git clone https://github.com/kavyashree-27122007/Moodverse-NLP-powered-friend-mood-match-movie-and-music-recommendation-platform-.git
+cd Moodverse-NLP-powered-friend-mood-match-movie-and-music-recommendation-platform-
+```
 
 ### 2. Backend Setup
 ```bash
 cd backend
 npm install
-```
-Configure your environment variables (see [Environment Variables](#environment-variables)).
-```bash
 npm run dev
 ```
-The backend will start on `http://localhost:5000`.
+*Backend runs on `http://localhost:5000`.*
 
 ### 3. Frontend Setup
-Open a new terminal window:
 ```bash
-cd frontend
+cd ../frontend
 npm install
-```
-Configure your frontend environment variables.
-```bash
 npm run dev
 ```
-The frontend will start on `http://localhost:5173`.
+*Frontend runs on `http://localhost:5173`.*
 
-## Environment Variables
+---
 
-Create a `.env` file in the **backend** directory:
-```env
-# Backend .env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/moodverse
-JWT_SECRET=your_super_secret_jwt_key
-CLIENT_URL=http://localhost:5173
-AI_API_KEY=your_gemini_or_openai_key
-```
-
-Create a `.env` file in the **frontend** directory:
-```env
-# Frontend .env
-VITE_API_BASE_URL=http://localhost:5000/api
-VITE_SOCKET_URL=http://localhost:5000
-```
-
-## Deployment Guide
-
-### Deploying the Backend (e.g., Render, Railway, Heroku)
-1. Push the `backend` folder to a GitHub repository (or use monorepo deployment tools).
-2. Set the build command to: `npm install && npm run build`
-3. Set the start command to: `npm start`
-4. Add all Backend environment variables in the host's dashboard. (Make sure `CLIENT_URL` points to your deployed frontend URL).
-
-### Deploying the Frontend (e.g., Vercel, Netlify, Cloudflare Pages)
-1. Push the `frontend` folder to your repository.
-2. Set the framework preset to `Vite`.
-3. Set the build command to: `npm run build`
-4. Set the output directory to: `dist`
-5. Add Frontend environment variables (`VITE_API_BASE_URL` pointing to your deployed backend URL).
-
-Enjoy building a more emotionally intelligent world with MoodVerse!
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).

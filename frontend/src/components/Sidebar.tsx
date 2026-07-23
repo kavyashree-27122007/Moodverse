@@ -42,8 +42,12 @@ const Sidebar: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-3"
         >
-          <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/30">
-            <span className="text-white text-lg font-black">M</span>
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-xl shadow-accent/40" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #3b82f6 100%)' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Stylized heart with EEG-style wave inside — emotional wellness icon */}
+              <path d="M12 21C12 21 3 14.5 3 8.5C3 6.01 5.01 4 7.5 4C9.24 4 10.76 4.96 11.57 6.38L12 7L12.43 6.38C13.24 4.96 14.76 4 16.5 4C18.99 4 21 6.01 21 8.5C21 14.5 12 21 12 21Z" fill="white" fillOpacity="0.25"/>
+              <path d="M4 11.5H7L9 9L11 13.5L13 10.5L14.5 12.5H20" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
           <div>
             <h1 className="text-white font-bold text-lg leading-none">MoodVerse</h1>

@@ -3,24 +3,12 @@ import axios from 'axios';
 
 const API = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api' });
 
-// Inject JWT on every request
+// Inject JWT token on every request
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('mv_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
-
-// Auto-logout on 401 Unauthorized
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('mv_token');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
 
 interface User {
   _id: string;
@@ -53,19 +41,33 @@ interface RegisterData {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('mv_token'));
+  // Initialize user and token synchronously from localStorage so session is instant!
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('mv_token'));
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('mv_user');
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(true);
 
-  // Restore session from localStorage
+  // Validate or refresh session with backend
   useEffect(() => {
     const storedToken = localStorage.getItem('mv_token');
     if (storedToken) {
       API.get('/auth/me')
-        .then((res) => setUser(res.data))
-        .catch(() => {
-          localStorage.removeItem('mv_token');
-          setToken(null);
+        .then((res) => {
+          setUser(res.data);
+          localStorage.setItem('mv_user', JSON.stringify(res.data));
+        })
+        .catch((err) => {
+          console.warn('[Auth] Server validation failed, using cached session:', err?.message);
+          // If token fails, retain cached mv_user so the user is not kicked out unexpectedly!
         })
         .finally(() => setLoading(false));
     } else {
@@ -73,44 +75,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Memoize callbacks so consumers only re-render if auth state changes
   const login = useCallback(async (identifier: string, password: string) => {
     const res = await API.post('/auth/login', { identifier, password });
-    localStorage.setItem('mv_token', res.data.token);
-    setToken(res.data.token);
-    setUser(res.data);
+    const userData = res.data;
+    localStorage.setItem('mv_token', userData.token);
+    localStorage.setItem('mv_user', JSON.stringify(userData));
+    setToken(userData.token);
+    setUser(userData);
   }, []);
 
   const register = useCallback(async (data: RegisterData) => {
     const res = await API.post('/auth/register', data);
-    localStorage.setItem('mv_token', res.data.token);
-    setToken(res.data.token);
-    setUser(res.data);
+    const userData = res.data;
+    localStorage.setItem('mv_token', userData.token);
+    localStorage.setItem('mv_user', JSON.stringify(userData));
+    setToken(userData.token);
+    setUser(userData);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem('mv_token');
+    localStorage.removeItem('mv_user');
     setToken(null);
     setUser(null);
   }, []);
 
-  // Memoize context value to prevent unnecessary re-renders of all consumers
   const contextValue = useMemo(
     () => ({ user, token, loading, login, register, logout }),
     [user, token, loading, login, register, logout]
   );
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
 };
 
 export { API };

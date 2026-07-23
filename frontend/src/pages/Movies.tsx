@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Film, Star, ExternalLink, Loader2 } from 'lucide-react';
+import { Film, Star, ExternalLink, Loader2, Play } from 'lucide-react';
 import { API } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -9,18 +9,53 @@ interface Movie {
   genre: string;
   language: string;
   rating: string;
+  poster?: string;
 }
+
+const EMOTIONS = ['Love', 'Happy', 'Sad', 'Angry', 'Calm', 'Motivated', 'Nostalgic', 'Excited'];
+
+// Pool of high quality unique movie poster fallback images
+const FALLBACK_POSTERS = [
+  'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1535992165812-3f84e5e56399?w=600&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80'
+];
+
+const getFallbackPoster = (title: string, index: number) => {
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) hash += title.charCodeAt(i);
+  return FALLBACK_POSTERS[(hash + index) % FALLBACK_POSTERS.length];
+};
 
 const Movies: React.FC = () => {
   const { currentEmotion } = useTheme();
+  const [selectedEmotion, setSelectedEmotion] = useState<string>(currentEmotion || 'Love');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (currentEmotion && !EMOTIONS.includes(selectedEmotion)) {
+      setSelectedEmotion(currentEmotion);
+    }
+  }, [currentEmotion]);
+
+  useEffect(() => {
     const fetchMovies = async () => {
+      setLoading(true);
       try {
-        const res = await API.get('/ai/recommendations');
-        setMovies(res.data.recommendations?.movies || []);
+        const res = await API.get(`/ai/recommendations?emotion=${encodeURIComponent(selectedEmotion)}`);
+        const fetched = res.data.recommendations?.movies || [];
+        setMovies(fetched.map((m: any, i: number) => ({
+          ...m,
+          poster: m.poster || getFallbackPoster(m.title || 'Movie', i)
+        })));
       } catch {
         setMovies([]);
       } finally {
@@ -28,14 +63,14 @@ const Movies: React.FC = () => {
       }
     };
     fetchMovies();
-  }, []);
+  }, [selectedEmotion]);
 
   const languageColors: Record<string, string> = {
-    tamil: 'bg-orange-500/20 text-orange-400',
-    hindi: 'bg-blue-500/20 text-blue-400',
-    english: 'bg-green-500/20 text-green-400',
-    telugu: 'bg-purple-500/20 text-purple-400',
-    malayalam: 'bg-red-500/20 text-red-400',
+    tamil: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
+    hindi: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+    english: 'bg-green-500/20 text-green-400 border border-green-500/30',
+    telugu: 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+    malayalam: 'bg-red-500/20 text-red-400 border border-red-500/30',
   };
 
   return (
@@ -46,9 +81,26 @@ const Movies: React.FC = () => {
           Movie Recommendations
         </h1>
         <p className="text-white/50 mt-1">
-          Films curated for your current <span className="text-accent font-medium">{currentEmotion}</span> mood
+          Blockbuster films curated for your <span className="text-accent font-medium">{selectedEmotion}</span> mood
         </p>
       </motion.div>
+
+      {/* Emotion Selector Pills */}
+      <div className="flex flex-wrap gap-2 pt-1">
+        {EMOTIONS.map((emo) => (
+          <button
+            key={emo}
+            onClick={() => setSelectedEmotion(emo)}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              selectedEmotion === emo
+                ? 'bg-accent text-white shadow-lg shadow-accent/30 scale-105'
+                : 'bg-surface/80 text-white/60 hover:text-white hover:bg-white/10 border border-white/10'
+            }`}
+          >
+            {emo}
+          </button>
+        ))}
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-20">
@@ -61,22 +113,43 @@ const Movies: React.FC = () => {
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.07 }}
-              className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-accent/30 transition-all group"
+              transition={{ delay: i * 0.05 }}
+              className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-accent/40 hover:shadow-xl transition-all group flex flex-col justify-between"
             >
-              {/* Poster placeholder */}
-              <div className="w-full aspect-[2/3] bg-gradient-to-br from-accent/40 via-accent/10 to-transparent flex items-center justify-center relative overflow-hidden">
-                <Film size={60} className="text-white/10" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-white font-bold text-lg leading-tight">{movie.title}</h3>
+              {/* Poster Image Container */}
+              <div 
+                className="w-full aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-br from-accent/40 via-accent/10 to-transparent flex items-center justify-center relative overflow-hidden cursor-pointer"
+                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}`, '_blank')}
+              >
+                <img
+                  src={movie.poster}
+                  alt={movie.title}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getFallbackPoster(movie.title, i);
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                
+                {/* Play overlay for trailer */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[2px]">
+                   <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/50">
+                      <Play size={24} className="text-white ml-1 fill-white" />
+                   </div>
+                </div>
+
+                <div className="absolute bottom-3 left-4 right-4">
+                  <h3 className="text-white font-bold text-lg leading-tight group-hover:text-accent transition-colors">{movie.title}</h3>
                 </div>
               </div>
 
-              <div className="p-5 space-y-3">
+              {/* Info & Tags */}
+              <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="flex flex-wrap gap-2">
                   {movie.genre && (
-                    <span className="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 font-medium">
+                    <span className="text-xs px-3 py-1 rounded-full bg-accent/15 text-accent border border-accent/30 font-medium">
                       {movie.genre}
                     </span>
                   )}
@@ -87,36 +160,24 @@ const Movies: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between">
-                  {movie.rating && movie.rating !== '-' ? (
-                    <div className="flex items-center gap-1.5">
-                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                      <span className="text-yellow-400 font-semibold text-sm">{movie.rating}</span>
-                      <span className="text-white/30 text-xs">/ 10</span>
-                    </div>
-                  ) : (
-                    <span className="text-white/30 text-xs">Rating unavailable</span>
-                  )}
-                  <a
-                    href={`https://www.imdb.com/find?q=${encodeURIComponent(movie.title)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1 text-xs text-white/40 hover:text-accent transition-colors group-hover:text-accent"
+                <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                  <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-sm">
+                    <Star size={16} className="fill-amber-400 text-amber-400" />
+                    <span>{movie.rating}</span>
+                    <span className="text-white/40 text-xs">/ 10</span>
+                  </div>
+
+                  <button
+                    onClick={() => window.open(`https://www.imdb.com/find/?q=${encodeURIComponent(movie.title)}`, '_blank')}
+                    className="flex items-center gap-1.5 text-xs text-accent hover:text-white transition-colors group/link cursor-pointer font-medium"
                   >
-                    <ExternalLink size={12} />
-                    IMDb
-                  </a>
+                    <span>IMDb Page</span>
+                    <ExternalLink size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                  </button>
                 </div>
               </div>
             </motion.div>
           ))}
-        </div>
-      )}
-
-      {!loading && movies.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-white/30">
-          <Film size={60} className="mb-4" />
-          <p className="text-lg">No recommendations yet. Log a mood first!</p>
         </div>
       )}
     </div>

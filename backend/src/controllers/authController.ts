@@ -13,21 +13,25 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   try {
     const { username, email, password, fullName } = req.body;
 
-    // Check if user exists - use .lean() for fast plain object return
+    if (!username || !email || !password || !fullName) {
+      res.status(400).json({ message: 'All fields are required' });
+      return;
+    }
+
+    // Check if user exists
     const userExists = await User.findOne({ $or: [{ email }, { username }] }).select('_id').lean();
     if (userExists) {
       res.status(400).json({ message: 'User with this email or username already exists' });
       return;
     }
 
-    // Password validation (8 chars, upper, lower, number, special)
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      res.status(400).json({ message: 'Password does not meet complexity requirements' });
+    // Relaxed password: min 6 chars
+    if (password.length < 6) {
+      res.status(400).json({ message: 'Password must be at least 6 characters' });
       return;
     }
 
-    // Hash password (rounds=12 is a good security/performance balance)
+    // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Create user
@@ -49,8 +53,15 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Server error during registration' });
+  } catch (error: any) {
+    console.error('[Auth] Registration error:', error?.message || error);
+    // Handle MongoDB duplicate key error
+    if (error?.code === 11000) {
+      const field = Object.keys(error.keyValue || {})[0] || 'field';
+      res.status(400).json({ message: `An account with that ${field} already exists` });
+      return;
+    }
+    res.status(500).json({ message: 'Server error during registration', detail: error?.message });
   }
 };
 

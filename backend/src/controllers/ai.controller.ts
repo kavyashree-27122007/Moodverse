@@ -5,7 +5,9 @@ import { aiEngine } from '../services/ai.service';
 
 export const getInsights = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user._id;
+    const user = (req as any).user;
+    const userId = user._id;
+    const persona = user.aiPersonality || 'Empathetic';
     
     // Fetch last 30 moods for better context
     const moods = await MoodEntry.find({ userId })
@@ -19,7 +21,7 @@ export const getInsights = async (req: Request, res: Response): Promise<void> =>
       memory = await EmotionalMemory.create({ userId });
     }
       
-    const analysis = await aiEngine.analyzeEmotion(moods, memory);
+    const analysis = await aiEngine.analyzeEmotion(moods, memory, persona);
     
     res.json({ success: true, insights: analysis });
   } catch (error) {
@@ -32,12 +34,16 @@ export const getRecommendations = async (req: Request, res: Response): Promise<v
   try {
     const userId = (req as any).user._id;
     
-    const latestMood = await MoodEntry.findOne({ userId })
-      .sort({ createdAt: -1 })
-      .select('emotion')
-      .lean();
+    let moodStr = req.query.emotion ? String(req.query.emotion) : '';
     
-    const moodStr = latestMood ? latestMood.emotion : 'Neutral';
+    if (!moodStr) {
+      const latestMood = await MoodEntry.findOne({ userId })
+        .sort({ createdAt: -1 })
+        .select('emotion')
+        .lean();
+      moodStr = latestMood ? latestMood.emotion : 'Neutral';
+    }
+    
     const recs = await aiEngine.getRecommendations(moodStr);
     
     res.json({ success: true, recommendations: recs, basedOn: moodStr });

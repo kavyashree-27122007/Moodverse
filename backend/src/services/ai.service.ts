@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { datasetService } from './dataset.service.js';
 
 export interface AIProvider {
-  analyzeEmotion(moods: any[], memory?: any): Promise<any>;
+  analyzeEmotion(moods: any[], memory?: any, personality?: string): Promise<any>;
   getRecommendations(mood: string): Promise<any>;
 }
 
@@ -15,8 +15,8 @@ class GeminiProvider implements AIProvider {
     this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   }
 
-  async analyzeEmotion(moods: any[], memory?: any): Promise<any> {
-    const prompt = `You are Moody, an empathetic wellness companion. You are NOT a licensed therapist and must not diagnose.
+  async analyzeEmotion(moods: any[], memory?: any, personality: string = 'Empathetic'): Promise<any> {
+    const prompt = `You are Moody, a ${personality.toLowerCase()} wellness companion. You are NOT a licensed therapist and must not diagnose.
 Analyze the following recent moods and memory data.
 Return ONLY a valid JSON object with the following keys, containing 1-2 sentence insights:
 {
@@ -44,7 +44,7 @@ Memory Context: ${JSON.stringify(memory || {})}
   }
 
   async getRecommendations(mood: string): Promise<any> {
-    const prompt = `Based on a mood of '${mood}', recommend 3 movies and 3 music tracks. Return ONLY a valid JSON object. For movies use: {"title": "Movie Name", "genre": "Genre", "language": "Language", "rating": "Rating"}. For music use: {"title": "Track Name", "artist": "Artist", "language": "Language"}. Wrap them in "movies" and "music" arrays.`;
+    const prompt = `Based on a mood of '${mood}', recommend 10 to 15 movies and 10 to 15 music tracks. Return ONLY a valid JSON object. For movies use: {"title": "Movie Name", "genre": "Genre", "language": "Language", "rating": "Rating"}. For music use: {"title": "Track Name", "artist": "Artist", "language": "Language", "url": "https://open.spotify.com/search/Track+Name"}. Wrap them in "movies" and "music" arrays.`;
     try {
       const result = await this.model.generateContent(prompt);
       const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
@@ -70,7 +70,7 @@ Memory Context: ${JSON.stringify(memory || {})}
 }
 
 class RuleBasedProvider implements AIProvider {
-  async analyzeEmotion(moods: any[], memory?: any): Promise<any> {
+  async analyzeEmotion(moods: any[], memory?: any, personality: string = 'Empathetic'): Promise<any> {
     if (moods.length === 0) {
        return this.getFallbackInsights([]);
     }
@@ -117,8 +117,8 @@ export class AIEngine {
     }
   }
 
-  async analyzeEmotion(moods: any[], memory?: any): Promise<any> {
-    return this.provider.analyzeEmotion(moods, memory);
+  async analyzeEmotion(moods: any[], memory?: any, personality?: string): Promise<any> {
+    return this.provider.analyzeEmotion(moods, memory, personality);
   }
 
   async getRecommendations(mood: string): Promise<any> {

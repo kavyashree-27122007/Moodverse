@@ -16,12 +16,23 @@ interface ChatMessage {
   timestamp: string;
 }
 
+export interface AppNotification {
+  id: string;
+  type: 'insight' | 'achievement' | 'friend_mood' | 'system' | 'message';
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+}
+
 interface SocketContextType {
   socket: Socket | null;
   friendStatuses: Record<string, FriendStatus>;
   chatMessages: ChatMessage[];
+  notifications: AppNotification[];
   broadcastMood: (emotion: string, intensity: number) => void;
   sendChatMessage: (to: string, message: string) => void;
+  markNotificationAsRead: (id: string) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -30,7 +41,36 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const { user } = useAuth();
   const socketRef = useRef<Socket | null>(null);
   const [friendStatuses, setFriendStatuses] = useState<Record<string, FriendStatus>>({});
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  
+  // Persistent chat messages from localStorage so chat memory is retained forever!
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem('mv_chat_messages');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [notifications, setNotifications] = useState<AppNotification[]>([
+    {
+      id: 'welcome',
+      type: 'system',
+      title: 'Welcome to MoodVerse 2.0',
+      message: 'Start logging your moods and connect with friends!',
+      timestamp: new Date().toISOString(),
+      read: false
+    }
+  ]);
+
+  // Sync chat messages to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem('mv_chat_messages', JSON.stringify(chatMessages));
+    } catch {
+      // ignore quota storage issues
+    }
+  }, [chatMessages]);
 
   useEffect(() => {
     if (!user) return;
@@ -65,11 +105,27 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ...prev,
         [data.userId]: { ...prev[data.userId], userId: data.userId, emotion: data.emotion, intensity: data.intensity, online: true },
       }));
+      setNotifications((prev) => [{
+        id: Date.now().toString(),
+        type: 'friend_mood',
+        title: 'Friend Update',
+        message: `A friend just updated their mood to ${data.emotion}`,
+        timestamp: new Date().toISOString(),
+        read: false
+      }, ...prev]);
     });
 
     // Receive a chat message
     socket.on('chat:message', (msg: ChatMessage) => {
       setChatMessages((prev) => [...prev, msg]);
+      setNotifications((prev) => [{
+        id: Date.now().toString(),
+        type: 'message',
+        title: 'New Message',
+        message: `You received a new message`,
+        timestamp: new Date().toISOString(),
+        read: false
+      }, ...prev]);
     });
 
     return () => {
@@ -85,16 +141,21 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const sendChatMessage = (to: string, message: string) => {
-    if (socketRef.current && user) {
-      const msg: ChatMessage = {
-        to,
-        from: user._id,
-        message,
-        timestamp: new Date().toISOString(),
-      };
+    const senderId = user?._id || 'me';
+    const msg: ChatMessage = {
+      to,
+      from: senderId,
+      message,
+      timestamp: new Date().toISOString(),
+    };
+    if (socketRef.current) {
       socketRef.current.emit('chat:message', msg);
-      setChatMessages((prev) => [...prev, msg]);
     }
+    setChatMessages((prev) => [...prev, msg]);
+  };
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prev) => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
 
   return (
@@ -103,8 +164,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         socket: socketRef.current,
         friendStatuses,
         chatMessages,
+        notifications,
         broadcastMood,
         sendChatMessage,
+        markNotificationAsRead
       }}
     >
       {children}
@@ -113,7 +176,5 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 };
 
 export const useSocket = () => {
-  const ctx = useContext(SocketContext);
-  if (!ctx) throw new Error('useSocket must be used within SocketProvider');
-  return ctx;
+  return useContext(SocketContext);
 };

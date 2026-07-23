@@ -29,7 +29,7 @@ interface MoodInputProps {
 
 const MoodInput: React.FC<MoodInputProps> = ({ onMoodLogged }) => {
   const { setEmotion } = useTheme();
-  const { broadcastMood } = useSocket();
+  const broadcastMood = useSocket()?.broadcastMood || (() => {});
   const [selected, setSelected] = useState<EmotionName | null>(null);
   const [intensity, setIntensity] = useState(5);
   const [note, setNote] = useState('');
