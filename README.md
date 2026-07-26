@@ -2,9 +2,9 @@
 
 <img src="https://img.shields.io/badge/MoodVerse-2.0-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse 2.0"/>
 
-# 🌌 MoodVerse 2.0
+# 🌌 MoodVerse 
 
-### *AI-Powered Emotional Wellness — Track · Discover · Connect*
+### *AI-Powered friend mood match movie and music recommendation  platform*
 
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-moodverse--chi.vercel.app-7c3aed?style=for-the-badge)](https://moodverse-chi.vercel.app)
 [![API](https://img.shields.io/badge/⚡%20Backend%20API-Render-10b981?style=for-the-badge)](https://moodverse-nyfd.onrender.com)
