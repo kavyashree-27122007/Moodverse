@@ -44,8 +44,18 @@ const MoodInput: React.FC<MoodInputProps> = ({ onMoodLogged }) => {
   const handleSubmit = async () => {
     if (!selected) return;
     setLoading(true);
+    
+    // Always save to local storage immediately so it shows on the chart even if offline
+    const tempEntry = { emotion: selected, intensity, note, createdAt: new Date().toISOString() };
+    const local = JSON.parse(localStorage.getItem('mv_offline_moods') || '[]');
+    local.push(tempEntry);
+    localStorage.setItem('mv_offline_moods', JSON.stringify(local));
+
     try {
       await API.post('/mood', { emotion: selected, intensity, note });
+    } catch (e) {
+      // silently fail — backend not running in demo or sleeping, local storage covers it
+    } finally {
       broadcastMood(selected, intensity);
       setSuccess(true);
       setNote('');
@@ -53,9 +63,6 @@ const MoodInput: React.FC<MoodInputProps> = ({ onMoodLogged }) => {
         setSuccess(false);
         onMoodLogged?.();
       }, 1500);
-    } catch (e) {
-      // silently fail for now — backend not running in demo
-    } finally {
       setLoading(false);
     }
   };

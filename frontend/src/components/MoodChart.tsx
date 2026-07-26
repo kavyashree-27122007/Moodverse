@@ -35,6 +35,13 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
   useEffect(() => {
     const fetchMoods = async () => {
       setLoading(true);
+      let localData: RawMoodEntry[] = [];
+      try {
+        localData = JSON.parse(localStorage.getItem('mv_offline_moods') || '[]');
+      } catch (e) {
+        localData = [];
+      }
+
       try {
         // Try /mood/stats first (aggregated)
         const statsRes = await API.get(`/mood/stats?days=${timeRange}`);
@@ -45,7 +52,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
             intensity: s.avgIntensity || 5,
             createdAt: s._id?.day ? `${s._id.day}T12:00:00Z` : new Date().toISOString(),
           }));
-          setRawEntries(synth);
+          setRawEntries([...localData, ...synth]);
         } else {
           throw new Error('empty stats');
         }
@@ -54,12 +61,12 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
           // Fallback: use raw /mood history
           const moodRes = await API.get(`/mood?limit=100`);
           if (moodRes.data && moodRes.data.length > 0) {
-            setRawEntries(moodRes.data);
+            setRawEntries([...localData, ...moodRes.data]);
           } else {
-            setRawEntries([]);
+            setRawEntries(localData);
           }
         } catch {
-          setRawEntries([]);
+          setRawEntries(localData);
         }
       } finally {
         setLoading(false);
