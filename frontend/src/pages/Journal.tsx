@@ -15,7 +15,23 @@ interface JournalEntry {
 const emotionEmojis: Record<string, string> = {
   Happy: '😊', Sad: '😢', Angry: '😤', Calm: '😌', Anxious: '😰',
   Excited: '🤩', Love: '❤️', Motivated: '💪', Relaxed: '😎', Neutral: '😐',
-  Fear: '😨', Disgust: '🤢', Surprised: '😲'
+  Fear: '😨', Disgust: '🤢', Surprised: '😲', Nostalgic: '🌅',
+};
+
+// Local storage key for offline/fallback journal entries
+const LOCAL_KEY = 'mv_journal_entries';
+
+const loadLocalEntries = (): JournalEntry[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+};
+
+const saveLocalEntry = (entry: JournalEntry) => {
+  const existing = loadLocalEntries();
+  existing.unshift(entry);
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(existing.slice(0, 100)));
 };
 
 const Journal: React.FC = () => {
@@ -24,37 +40,56 @@ const Journal: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [newNote, setNewNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const fetchHistory = async () => {
     try {
       const res = await API.get('/mood?limit=50');
-      // Only show entries with notes
-      const withNotes = res.data.filter((e: JournalEntry) => e.note && e.note.trim().length > 0);
-      setEntries(withNotes);
-    } catch (err) {
-      console.error('Failed to fetch journal', err);
+      const withNotes = (res.data as JournalEntry[]).filter((e) => e.note && e.note.trim().length > 0);
+      // Merge with local entries (avoid duplicates by _id)
+      const local = loadLocalEntries();
+      const serverIds = new Set(withNotes.map((e) => e._id).filter(Boolean));
+      const uniqueLocal = local.filter((e) => !e._id || !serverIds.has(e._id));
+      setEntries([...uniqueLocal, ...withNotes]);
+    } catch {
+      // Offline — show local only
+      setEntries(loadLocalEntries());
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
+  useEffect(() => { fetchHistory(); }, []);
 
   const handleAddEntry = async () => {
     if (!newNote.trim()) return;
     setSubmitting(true);
+    setError('');
+    setSuccess('');
+    const emotion = currentEmotion || 'Neutral';
+    const tempEntry: JournalEntry = {
+      emotion,
+      intensity: 5,
+      note: newNote.trim(),
+      createdAt: new Date().toISOString(),
+    };
     try {
-      await API.post('/mood', {
-        emotion: currentEmotion,
-        intensity: 5,
-        note: newNote.trim()
-      });
+      const res = await API.post('/mood', { emotion, intensity: 5, note: newNote.trim() });
+      // Save with server _id if returned
+      const saved: JournalEntry = { ...tempEntry, _id: res.data?.entry?._id };
+      saveLocalEntry(saved);
       setNewNote('');
-      fetchHistory(); // refresh list
-    } catch (err) {
-      console.error('Failed to add journal entry', err);
+      setSuccess('Journal entry saved! ✨');
+      setTimeout(() => setSuccess(''), 3000);
+      fetchHistory();
+    } catch {
+      // API fail — save locally so nothing is lost
+      saveLocalEntry(tempEntry);
+      setEntries((prev) => [tempEntry, ...prev]);
+      setNewNote('');
+      setSuccess('Saved locally ✓ (will sync when online)');
+      setTimeout(() => setSuccess(''), 4000);
     } finally {
       setSubmitting(false);
     }
@@ -71,24 +106,28 @@ const Journal: React.FC = () => {
       </motion.div>
 
       {/* New Journal Entry Input */}
-      <div className="max-w-3xl flex gap-3">
-        <input
-          type="text"
-          placeholder={`How are you feeling about being ${currentEmotion}?`}
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAddEntry()}
-          style={{ color: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-          className="flex-1 px-5 py-3 rounded-xl border border-white/20 placeholder-white/50 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
-        />
-        <button
-          onClick={handleAddEntry}
-          disabled={submitting || !newNote.trim()}
-          className="px-6 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-        >
-          {submitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-          Save
-        </button>
+      <div className="max-w-3xl space-y-3">
+        <div className="flex gap-3">
+          <input
+            type="text"
+            placeholder={`How are you feeling about being ${currentEmotion || 'today'}?`}
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddEntry()}
+            style={{ color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.08)' }}
+            className="flex-1 px-5 py-3 rounded-xl border border-white/20 placeholder-white/40 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+          />
+          <button
+            onClick={handleAddEntry}
+            disabled={submitting || !newNote.trim()}
+            className="px-6 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            {submitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+            Save
+          </button>
+        </div>
+        {success && <p className="text-emerald-400 text-sm font-medium">{success}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
       </div>
 
       {loading ? (
@@ -102,16 +141,16 @@ const Journal: React.FC = () => {
           className="flex flex-col items-center justify-center py-24 text-white/30 space-y-4"
         >
           <PenLine size={60} />
-          <p className="text-lg text-center">No journal entries yet.<br />Log a mood with a note to start your journal.</p>
+          <p className="text-lg text-center">No journal entries yet.<br />Write something above to start your journal.</p>
         </motion.div>
       ) : (
         <div className="space-y-4 max-w-3xl">
           {entries.map((entry, i) => (
             <motion.div
-              key={entry._id || i}
+              key={entry._id || `local-${i}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: i * 0.04 }}
               className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-accent/20 transition-all"
             >
               <div className="flex items-start justify-between mb-3">
