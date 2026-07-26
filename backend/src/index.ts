@@ -25,7 +25,12 @@ const io = new Server(httpServer, {
 // Security & Performance Middleware
 app.use(helmet({ contentSecurityPolicy: false })); // CSP off: handled by frontend
 app.use(compression());
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+// CORS configuration (allow Vercel frontend or fallback to *)
+const allowedOrigins = process.env.CLIENT_URL 
+  ? [process.env.CLIENT_URL, 'https://moodverse-chi.vercel.app'] 
+  : '*';
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: '1mb' })); // Prevent oversized payloads
 
 // Database Connection
@@ -35,8 +40,12 @@ app.use('/api/mood', moodRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Health check
-app.get('/health', (req, res) => {
+// Root & Health check
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ status: 'healthy', message: 'MoodVerse 2.0 API is running 🚀' });
+});
+
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'healthy', message: 'MoodVerse API is running' });
 });
 
