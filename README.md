@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/MoodVerse-2.0-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse "/>
+<img src="https://img.shields.io/badge/MoodVerse-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse "/>
 
 # 🌌 MoodVerse 
 
