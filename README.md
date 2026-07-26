@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/MoodVerse-2.0-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse 2.0"/>
+<img src="https://img.shields.io/badge/MoodVerse-2.0-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse "/>
 
 # 🌌 MoodVerse 
 
@@ -15,7 +15,7 @@
 
 ---
 
-> **MoodVerse 2.0** is a full-stack emotional wellness platform that uses **Google Gemini AI** to understand your emotions and curate personalized experiences — music, movies, journal entries, and social connections — all in one stunning dark-mode app.
+> **MoodVerse ** is a full-stack emotional wellness platform that uses **Google Gemini AI** to understand your emotions and curate personalized experiences — music, movies, journal entries, and social connections — all in one stunning dark-mode app.
 
 </div>
 
