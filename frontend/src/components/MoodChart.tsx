@@ -11,85 +11,99 @@ const EMOTION_COLORS: Record<string, string> = {
   Love: '#EC4899', Excited: '#A855F7', Calm: '#10B981', Lonely: '#64748B',
   Confident: '#2563EB', Hopeful: '#0EA5E9', Motivated: '#F97316', Nostalgic: '#D97706',
   Anxious: '#8B5CF6', Relaxed: '#22C55E', Bored: '#9CA3AF', Frustrated: '#DC2626',
-  Overwhelmed: '#9333EA', Grateful: '#84CC16', Jealous: '#15803D', Insecure: '#A3A3A3',
-  Proud: '#6366F1', Inspired: '#EAB308', Confused: '#71717A', Surprised: '#D946EF',
-  Stressed: '#B91C1C', Peaceful: '#14B8A6', Optimistic: '#F59E0B', Pessimistic: '#475569',
-  Curious: '#818CF8', Neutral: '#A855F7',
+  Overwhelmed: '#9333EA', Grateful: '#84CC16', Peaceful: '#14B8A6',
+  Stressed: '#B91C1C', Optimistic: '#F59E0B', Pessimistic: '#475569',
+  Neutral: '#A855F7', Surprised: '#D946EF',
 };
 
 interface MoodChartProps {
   refreshKey?: number;
 }
 
+interface RawMoodEntry {
+  _id?: string;
+  emotion: string;
+  intensity: number;
+  createdAt: string;
+}
+
 const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
-  const [stats, setStats] = useState<any[]>([]);
+  const [rawEntries, setRawEntries] = useState<RawMoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState(7);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchMoods = async () => {
       setLoading(true);
       try {
-        const res = await API.get(`/mood/stats?days=${timeRange}`);
-        setStats(res.data);
+        // Try /mood/stats first (aggregated)
+        const statsRes = await API.get(`/mood/stats?days=${timeRange}`);
+        if (statsRes.data && statsRes.data.length > 0) {
+          // Convert aggregated format into raw entries for charting
+          const synth: RawMoodEntry[] = statsRes.data.map((s: any) => ({
+            emotion: s._id?.emotion || 'Neutral',
+            intensity: s.avgIntensity || 5,
+            createdAt: s._id?.day ? `${s._id.day}T12:00:00Z` : new Date().toISOString(),
+          }));
+          setRawEntries(synth);
+        } else {
+          throw new Error('empty stats');
+        }
       } catch {
-        // Use demo data if backend is unavailable
-        setStats(generateDemoData(timeRange));
+        try {
+          // Fallback: use raw /mood history
+          const moodRes = await API.get(`/mood?limit=100`);
+          if (moodRes.data && moodRes.data.length > 0) {
+            setRawEntries(moodRes.data);
+          } else {
+            setRawEntries([]);
+          }
+        } catch {
+          setRawEntries([]);
+        }
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchMoods();
   }, [timeRange, refreshKey]);
 
-  // Generate demo data for visualization when backend is not connected
-  const generateDemoData = (days: number) => {
-    const emotions = ['Happy', 'Calm', 'Motivated', 'Anxious', 'Sad', 'Excited', 'Peaceful'];
-    const data: any[] = [];
-    for (let i = days; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dayStr = d.toISOString().split('T')[0];
-      const em = emotions[Math.floor(Math.random() * emotions.length)];
-      data.push({
-        _id: { emotion: em, day: dayStr },
-        count: Math.floor(Math.random() * 4) + 1,
-        avgIntensity: Math.round((Math.random() * 5 + 4) * 10) / 10,
-      });
-    }
-    return data;
-  };
+  // Filter entries to the selected time range
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - timeRange);
+  const filtered = rawEntries.filter(e => new Date(e.createdAt) >= cutoff);
 
-  // Transform aggregated stats into chart-friendly format
+  // ── Timeline: group by day, avg intensity
   const timelineData = (() => {
-    const grouped: Record<string, { day: string; count: number; avgIntensity: number; emotions: string[] }> = {};
-    stats.forEach((s) => {
-      const day = s._id.day;
-      if (!grouped[day]) grouped[day] = { day, count: 0, avgIntensity: 0, emotions: [] };
-      grouped[day].count += s.count;
-      grouped[day].avgIntensity = s.avgIntensity;
-      grouped[day].emotions.push(s._id.emotion);
+    const grouped: Record<string, { day: string; totalIntensity: number; count: number }> = {};
+    filtered.forEach(e => {
+      const day = e.createdAt.split('T')[0];
+      if (!grouped[day]) grouped[day] = { day, totalIntensity: 0, count: 0 };
+      grouped[day].totalIntensity += e.intensity;
+      grouped[day].count += 1;
     });
-    return Object.values(grouped).sort((a, b) => a.day.localeCompare(b.day));
+    return Object.values(grouped)
+      .sort((a, b) => a.day.localeCompare(b.day))
+      .map(d => ({ day: d.day, avgIntensity: Math.round((d.totalIntensity / d.count) * 10) / 10, count: d.count }));
   })();
 
+  // ── Pie: emotion frequency
   const pieData = (() => {
     const map: Record<string, number> = {};
-    stats.forEach((s) => {
-      map[s._id.emotion] = (map[s._id.emotion] || 0) + s.count;
-    });
+    filtered.forEach(e => { map[e.emotion] = (map[e.emotion] || 0) + 1; });
     return Object.entries(map)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 8);
   })();
 
+  // ── Bar: avg intensity per emotion
   const barData = (() => {
     const map: Record<string, { total: number; count: number }> = {};
-    stats.forEach((s) => {
-      if (!map[s._id.emotion]) map[s._id.emotion] = { total: 0, count: 0 };
-      map[s._id.emotion].total += s.avgIntensity * s.count;
-      map[s._id.emotion].count += s.count;
+    filtered.forEach(e => {
+      if (!map[e.emotion]) map[e.emotion] = { total: 0, count: 0 };
+      map[e.emotion].total += e.intensity;
+      map[e.emotion].count += 1;
     });
     return Object.entries(map)
       .map(([name, { total, count }]) => ({ name, intensity: Math.round((total / count) * 10) / 10 }))
@@ -124,6 +138,40 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
     );
   }
 
+  // No mood data yet — show friendly empty state
+  if (filtered.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex gap-2">
+          {[7, 14, 30].map((d) => (
+            <button
+              key={d}
+              onClick={() => setTimeRange(d)}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                timeRange === d
+                  ? 'bg-accent text-white shadow-lg shadow-accent/20'
+                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              {d}d
+            </button>
+          ))}
+        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center"
+        >
+          <p className="text-5xl mb-4">📊</p>
+          <h3 className="text-white font-bold text-xl mb-2">No mood data yet for this period</h3>
+          <p className="text-white/40 text-sm">
+            Log your mood from the Dashboard and come back to see your personal analytics!
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Time range selector */}
@@ -144,13 +192,14 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Area Chart - Timeline */}
+        {/* Area Chart - Mood Timeline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="lg:col-span-2 bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
         >
-          <h3 className="text-white font-semibold mb-4">Mood Timeline</h3>
+          <h3 className="text-white font-semibold mb-1">Mood Timeline</h3>
+          <p className="text-white/35 text-xs mb-4">Your emotional intensity over the past {timeRange} days</p>
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={timelineData}>
               <defs>
@@ -170,6 +219,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
                 tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
+                domain={[0, 10]}
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
@@ -200,7 +250,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
           transition={{ delay: 0.1 }}
           className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
         >
-          <h3 className="text-white font-semibold mb-4">Emotion Distribution</h3>
+          <h3 className="text-white font-semibold mb-1">Emotion Distribution</h3>
+          <p className="text-white/35 text-xs mb-4">Which emotions you felt most in the last {timeRange} days</p>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
@@ -236,7 +287,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ refreshKey }) => {
           transition={{ delay: 0.2 }}
           className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
         >
-          <h3 className="text-white font-semibold mb-4">Average Intensity</h3>
+          <h3 className="text-white font-semibold mb-1">Average Intensity</h3>
+          <p className="text-white/35 text-xs mb-4">How intensely you've felt each emotion</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
