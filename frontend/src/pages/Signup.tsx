@@ -126,62 +126,62 @@ const Signup: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-white/70 mb-2">Full Name</label>
               <input 
                 name="fullName"
                 type="text" 
                 value={formData.fullName}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+                className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
                 placeholder="John Doe"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-1">Username</label>
+              <label className="block text-sm font-medium text-white/70 mb-2">Username</label>
               <input 
                 name="username"
                 type="text" 
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+                className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
                 placeholder="@johndoe"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Email</label>
+            <label className="block text-sm font-medium text-white/70 mb-2">Email</label>
             <input 
               name="email"
               type="email" 
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+              className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
               placeholder="john@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Password</label>
+            <label className="block text-sm font-medium text-white/70 mb-2">Password</label>
             <div className="relative">
               <input 
                 name="password"
                 type={showPassword ? "text" : "password"} 
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+                className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
                 placeholder="Create a strong password"
               />
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors text-sm"
+                className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors text-sm font-medium tracking-wide"
               >
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
             {formData.password && (
-              <div className="mt-2 flex items-center space-x-2">
+              <div className="mt-3 flex items-center space-x-3">
                 <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <motion.div 
                     className={`h-full ${strength.color}`}
@@ -190,19 +190,19 @@ const Signup: React.FC = () => {
                     transition={{ duration: 0.3 }}
                   />
                 </div>
-                <span className={`text-xs ${strength.color.replace('bg-', 'text-')}`}>{strength.label}</span>
+                <span className={`text-xs font-medium tracking-wide ${strength.color.replace('bg-', 'text-')}`}>{strength.label}</span>
               </div>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Confirm Password</label>
+            <label className="block text-sm font-medium text-white/70 mb-2">Confirm Password</label>
             <input 
               name="confirmPassword"
               type={showPassword ? "text" : "password"} 
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+              className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
               placeholder="Confirm your password"
             />
           </div>

@@ -60,82 +60,76 @@ const Login: React.FC = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-10 w-full max-w-md p-8 bg-surface/50 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <motion.h1 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-4xl font-bold tracking-tight text-white mb-2"
+            className="text-4xl font-extrabold tracking-tight text-white mb-2"
           >
             Welcome Back
           </motion.h1>
           <p className="text-white/60">Log in to your emotional universe</p>
-          
-          <div className="mt-4 p-3 bg-accent/10 border border-accent/20 rounded-xl">
-            <p className="text-xs text-accent/80">
-              <span className="font-bold">Note:</span> If the server recently restarted, the local database may have reset. If you can't log in, please <Link to="/signup" className="underline hover:text-white">Sign Up</Link> again to recreate your account.
-            </p>
-          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
             <motion.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm"
+              className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center justify-center text-center"
             >
               {error}
             </motion.div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Username or Email</label>
+            <label className="block text-sm font-medium text-white/70 mb-2">Username or Email</label>
             <input 
               type="text" 
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+              className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
               placeholder="Enter your email or username"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Password</label>
+            <label className="block text-sm font-medium text-white/70 mb-2">Password</label>
             <div className="relative">
               <input 
                 type={showPassword ? "text" : "password"} 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+                className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all hover:bg-white/10"
                 placeholder="Enter your password"
               />
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors text-sm font-medium tracking-wide"
               >
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm py-2">
             <label className="flex items-center space-x-2 cursor-pointer group">
-              <input type="checkbox" className="rounded border-white/20 bg-white/5 text-accent focus:ring-accent" />
-              <span className="text-white/60 group-hover:text-white transition-colors">Remember me</span>
+              <input type="checkbox" className="rounded border-white/10 bg-white/5 text-accent focus:ring-accent focus:ring-offset-0" />
+              <span className="text-white/50 group-hover:text-white/90 transition-colors">Remember me</span>
             </label>
-            <a href="#" className="text-accent hover:text-accent/80 transition-colors">Forgot Password?</a>
+            <a href="#" className="text-accent/80 hover:text-accent transition-colors">Forgot Password?</a>
           </div>
 
           <motion.button 
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             disabled={loading}
-            className={`w-full py-3.5 rounded-xl font-semibold shadow-lg transition-all ${
+            className={`w-full py-4 mt-2 rounded-2xl font-bold shadow-xl shadow-accent/20 transition-all ${
               loading 
                 ? 'bg-accent/50 cursor-not-allowed' 
-                : 'bg-accent hover:bg-accent/90 hover:shadow-accent/25'
+                : 'bg-accent hover:bg-accent/90 hover:shadow-accent/40'
             } text-white relative overflow-hidden`}
           >
             {loading ? (
