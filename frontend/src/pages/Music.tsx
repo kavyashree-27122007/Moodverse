@@ -224,7 +224,11 @@ const Music: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: i * 0.04 }}
-                onClick={() => window.open(track.url, '_blank')}
+                onClick={() => {
+                  // Open YouTube Music search - no login needed, works on all devices
+                  const query = encodeURIComponent(`${track.name} ${track.artist}`);
+                  window.open(`https://music.youtube.com/search?q=${query}`, '_blank');
+                }}
                 className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10 transition-all group cursor-pointer flex flex-col justify-between"
               >
                 <div>
@@ -240,13 +244,14 @@ const Music: React.FC = () => {
                       className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
                     />
                     {/* Hover Play overlay */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center backdrop-blur-[2px] gap-2">
                       <motion.div
                         whileHover={{ scale: 1.15 }}
                         className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-lg shadow-accent/50 text-white"
                       >
                         <Play size={22} className="ml-0.5 fill-white" />
                       </motion.div>
+                      <span className="text-[10px] text-white/70 font-medium">YouTube Music</span>
                     </div>
                   </div>
 
