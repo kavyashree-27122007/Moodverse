@@ -1,222 +1,151 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/MoodVerse-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse "/>
-
 # 🌌 MoodVerse 
 
-### *AI-Powered friend mood match movie and music recommendation  platform*
+<p align="center">
+  <img src="https://img.shields.io/badge/MoodVerse-blueviolet?style=for-the-badge&logo=sparkles&logoColor=white" alt="MoodVerse "/>
+  <img src="https://img.shields.io/badge/Status-Live-success?style=for-the-badge" alt="Status" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License">
+</p>
+
+### *An AI-Powered Emotional Wellness Platform that curates your Music, Movies, and Friends based on how you feel.*
 
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-moodverse--chi.vercel.app-7c3aed?style=for-the-badge)](https://moodverse-chi.vercel.app)
 [![API](https://img.shields.io/badge/⚡%20Backend%20API-Render-10b981?style=for-the-badge)](https://moodverse-nyfd.onrender.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47a248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com/)
-
----
-
-> **MoodVerse ** is a full-stack emotional wellness platform that uses **Google Gemini AI** to understand your emotions and curate personalized experiences — music, movies, journal entries, and social connections — all in one stunning dark-mode app.
 
 </div>
 
 ---
 
-## ✨ Features
+## 📖 About The Project
 
-| Feature | Description |
-|---|---|
-| 🧠 **AI Mood Analysis** | Gemini-powered insights analyzing your emotional patterns over time |
-| 🎵 **Mood-Matched Music** | Curated Indian & global tracks (Tamil, Hindi, Telugu, English) by emotion |
-| 🎬 **Movie Recommendations** | Films handpicked for your exact vibe — from blockbusters to hidden gems |
-| 📓 **Mood Journal** | Private emotional diary with offline save & auto-sync |
-| 👥 **Friends & Social** | Connect with friends, share your emotional journey |
-| 📊 **Analytics Dashboard** | Beautiful charts tracking your mood patterns over 7/30/90 days |
-| 🏆 **Gamification** | Streaks, points, and achievements to keep you consistent |
-| 🤖 **Moody Mascot** | Animated AI companion that reacts to your current mood |
-| 🌙 **Dark Mode First** | Stunning glassmorphism UI — built for night owls |
+**MoodVerse** is a full-stack, responsive emotional wellness and tracking platform. Powered by **Google Gemini AI**, it goes beyond simple mood tracking by understanding the nuance of your emotions and curating personalized experiences. Whether you need an energetic Kuthu beat to celebrate, or a melancholic melody to reflect, MoodVerse provides it in a stunning, fully responsive dark-mode environment.
 
----
+### 🌟 Key Features
 
-## 🚀 Live Demo
-
-🌐 **Frontend:** [https://moodverse-chi.vercel.app](https://moodverse-chi.vercel.app)  
-⚡ **Backend API:** [https://moodverse-nyfd.onrender.com](https://moodverse-nyfd.onrender.com)
+*   🧠 **AI Mood Analysis:** Advanced context-aware emotional insights driven by Gemini.
+*   🎵 **Mood-Matched Music:** Contextual links to YouTube Music tracks categorized perfectly for your current state.
+*   🎬 **Movie Recommendations:** Handpicked Tamil, Telugu, Hindi, and English films tailored to your mood.
+*   📓 **Secure Journaling:** A private space to reflect, powered by cloud-synced MongoDB.
+*   👥 **Social Connections:** See how your friends are feeling and support each other.
+*   📊 **Analytics Dashboard:** Beautiful, interactive charts tracking your emotional journey over time.
+*   📱 **Fully Responsive UI:** Optimized for both Desktop and Mobile with sleek navigation bars.
+*   🌙 **Glassmorphism Aesthetic:** A modern, premium dark-mode interface built with TailwindCSS and Framer Motion.
 
 ---
 
-## 🛠️ Tech Stack
+## 💻 Tech Stack
 
-### Frontend
-- **React 18** + **TypeScript** — type-safe component architecture
-- **Vite 8** — lightning-fast HMR build tool
-- **Framer Motion** — smooth animations & micro-interactions
-- **TailwindCSS** — utility-first responsive styling
-- **Axios** — API communication with JWT interceptors
-- **Recharts** — analytics data visualizations
-- **Socket.io Client** — real-time friend notifications
-- **Lucide React** — crisp icon library
+### Frontend Architecture
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-### Backend
-- **Node.js** + **Express** — fast REST API
-- **TypeScript** — end-to-end type safety
-- **MongoDB Atlas** + **Mongoose** — cloud database
-- **Google Gemini AI** — emotion analysis & recommendations
-- **Socket.io** — real-time messaging
-- **JWT** — secure authentication
-- **bcrypt** — password hashing
+*   **State Management & Routing:** React Router v6, Context API
+*   **Animations:** Framer Motion
+*   **Data Visualization:** Recharts
+*   **Icons:** Lucide React
 
----
+### Backend Architecture
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47a248?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com/)
+[![JWT](https://img.shields.io/badge/JWT-Auth-black?style=flat-square&logo=json-web-tokens&logoColor=white)](https://jwt.io/)
 
-## 📁 Project Structure
-
-```
-moodverse/
-├── frontend/                  # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── LandingPage.tsx   # ✨ Hero intro page
-│   │   │   ├── Dashboard.tsx     # Mood logging hub
-│   │   │   ├── Music.tsx         # Emotion-curated music
-│   │   │   ├── Movies.tsx        # Mood-matched films
-│   │   │   ├── Journal.tsx       # Private mood diary
-│   │   │   ├── Analytics.tsx     # Mood charts & trends
-│   │   │   ├── Friends.tsx       # Social features
-│   │   │   └── Achievements.tsx  # Gamification
-│   │   ├── components/
-│   │   │   ├── MoodyMascot.tsx   # Animated AI mascot
-│   │   │   ├── AppLayout.tsx     # Sidebar navigation
-│   │   │   └── ProtectedRoute.tsx
-│   │   └── context/
-│   │       ├── AuthContext.tsx   # JWT auth + Axios instance
-│   │       ├── ThemeContext.tsx  # Emotion-driven theme
-│   │       ├── SocketContext.tsx # Real-time events
-│   │       └── MascotContext.tsx # Mascot state
-│   └── vite.config.ts
-│
-└── backend/                   # Express + TypeScript
-    └── src/
-        ├── routes/
-        │   ├── auth.ts          # Register/Login/Me
-        │   ├── mood.ts          # Mood CRUD
-        │   ├── ai.routes.ts     # AI insights & recs
-        │   └── friends.ts       # Social
-        ├── controllers/
-        ├── models/
-        │   ├── User.ts
-        │   ├── MoodEntry.ts
-        │   └── EmotionalMemory.ts
-        └── services/
-            ├── ai.service.ts    # Gemini + fallback engine
-            └── dataset.service.ts # Curated Tamil/Indian data
-```
+*   **Core:** Node.js, Express.js (TypeScript)
+*   **Database:** MongoDB Atlas + Mongoose ODM
+*   **AI Engine:** Google Gemini SDK (`@google/genai`)
+*   **Real-time:** Socket.io
+*   **Security:** bcrypt, JWT, CORS
 
 ---
 
-## 🏃 Getting Started
+## 🚀 Getting Started Locally
+
+To get a local copy up and running, follow these simple steps.
 
 ### Prerequisites
-- Node.js 18+
-- MongoDB Atlas account
-- Google Gemini API key (optional — fallback works without it)
 
-### 1. Clone & Install
+*   **Node.js** (v18.x or higher)
+*   **npm** (or yarn/pnpm)
+*   A **MongoDB Atlas** Cluster (or local MongoDB)
+*   *(Optional)* A **Google Gemini API Key** for AI features
 
-```bash
-git clone https://github.com/kavyashree-27122007/Moodverse.git
-cd Moodverse
+### Installation
 
-# Install frontend
-cd frontend && npm install
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/kavyashree-27122007/Moodverse.git
+   cd Moodverse
+   ```
 
-# Install backend
-cd ../backend && npm install
-```
+2. **Setup the Backend**
+   ```bash
+   cd backend
+   npm install
+   ```
+   Create a `.env` file in the `backend` directory:
+   ```env
+   PORT=5000
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_key
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+   Start the backend development server:
+   ```bash
+   npm run dev
+   ```
 
-### 2. Environment Variables
+3. **Setup the Frontend**
+   Open a new terminal window:
+   ```bash
+   cd frontend
+   npm install
+   ```
+   Create a `.env` file in the `frontend` directory:
+   ```env
+   VITE_API_BASE_URL=http://localhost:5000/api
+   ```
+   Start the frontend development server:
+   ```bash
+   npm run dev
+   ```
 
-**Backend** — create `backend/.env`:
-```env
-PORT=5000
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_super_secret_key
-GEMINI_API_KEY=your_google_gemini_api_key   # optional
-```
-
-**Frontend** — create `frontend/.env`:
-```env
-VITE_API_BASE_URL=http://localhost:5000/api
-```
-
-### 3. Run Locally
-
-```bash
-# Terminal 1 — Backend
-cd backend && npm run dev
-
-# Terminal 2 — Frontend
-cd frontend && npm run dev
-```
-
-Open **http://localhost:5173** 🎉
-
----
-
-## 🌍 Deployment
-
-### Frontend → Vercel
-```bash
-# Set environment variable in Vercel dashboard:
-VITE_API_BASE_URL = https://your-render-api.onrender.com/api
-```
-
-### Backend → Render
-```yaml
-Build Command: npm install && npm run build
-Start Command: node dist/index.js
-Environment: NODE_ENV=production, MONGO_URI, JWT_SECRET, GEMINI_API_KEY
-```
+4. **Access the App**
+   Open `http://localhost:5173` in your browser.
 
 ---
 
-## 🎭 Emotion Categories
+## 🌍 Cloud Deployment
 
-MoodVerse understands **8 core emotions**, each with curated content:
+MoodVerse is built for modern cloud infrastructure.
 
-| Emotion | Music | Movies |
-|---|---|---|
-| ❤️ Love | Sid Sriram, A.R. Rahman | Sita Ramam, 96, VTV |
-| 😊 Happy | Anirudh, Hiphop Tamizha | Leo, Jailer, Master |
-| 😢 Sad | Melancholic melodies | Jai Bhim, Chitha |
-| 😤 Angry | Mass anthems, EDM | Vikram, Kaithi, Sarpatta |
-| 😌 Calm | Lo-fi, acoustic | Thiruchitrambalam, OK Kanmani |
-| 💪 Motivated | Power tracks | Soorarai Pottru, Jai Bhim |
-| 🌅 Nostalgic | Classics, retro hits | 96, Anbe Sivam, Premam |
-| 🤩 Excited | Party & kuthu beats | Leo, Vikram, Beast |
+*   **Frontend:** Deployed globally on [Vercel](https://vercel.com). Routing is handled flawlessly via `vercel.json` rewrites.
+*   **Backend:** Hosted on [Render](https://render.com). The API serves responses instantly and connects to our secure MongoDB Atlas cluster.
 
----
-
-## 📸 Screenshots
-
-> Visit the live demo: [moodverse-chi.vercel.app](https://moodverse-chi.vercel.app)
+> Note: On Render's free tier, the backend may sleep after 15 minutes of inactivity. MoodVerse gracefully handles this by caching recent entries in your browser (`localStorage`) so your UI remains responsive!
 
 ---
 
 ## 🤝 Contributing
 
-Pull requests are welcome! For major changes, please open an issue first.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
 <div align="center">
-
-Made with ❤️ and lots of 🎵 by **Kavyashree**
-
-⭐ **Star this repo if you love MoodVerse!** ⭐
-
+  <p>Built with ❤️ and 🎵 by <b>Kavyashree</b></p>
+  <p>If you like this project, please give it a ⭐ on GitHub!</p>
 </div>
