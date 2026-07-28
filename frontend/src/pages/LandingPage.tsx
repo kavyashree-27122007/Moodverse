@@ -1,10 +1,11 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import {
   Sparkles, Brain, Music2, Film, BookOpen, Users, TrendingUp,
   ChevronRight, Star, Heart, Zap, Shield, Smile
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const FEATURES = [
   { icon: Brain,     title: 'AI Mood Analysis',         desc: 'Gemini-powered emotional insights that understand you deeply.',           color: 'from-violet-500 to-purple-600' },
@@ -25,10 +26,17 @@ const EMOJIS = ['😊', '💪', '😌', '🤩', '❤️', '😢', '😤', '🎶'
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-[#09090f] text-white overflow-x-hidden font-sans">

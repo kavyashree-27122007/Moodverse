@@ -22,6 +22,13 @@ const Settings: React.FC = () => {
     setToggles(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const [actionStatus, setActionStatus] = useState<string | null>(null);
+
+  const showMessage = (msg: string) => {
+    setActionStatus(msg);
+    setTimeout(() => setActionStatus(null), 3000);
+  };
+
   return (
     <div className="p-8 space-y-8 pb-20 max-w-3xl">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
@@ -123,27 +130,33 @@ const Settings: React.FC = () => {
 
       {/* AI Memory Management Section */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 space-y-4">
-        <h2 className="text-white font-bold flex items-center gap-2"><SettingsIcon size={18} className="text-accent" /> Data & AI Memory</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-white font-bold flex items-center gap-2"><SettingsIcon size={18} className="text-accent" /> Data & AI Memory</h2>
+          {actionStatus && <span className="text-xs text-accent font-medium animate-pulse">{actionStatus}</span>}
+        </div>
         <p className="text-white/60 text-sm mb-4">Manage the long-term memory Moody uses to personalize your experience.</p>
         
         <div className="space-y-4">
           <button 
             onClick={async () => {
+              showMessage('Fetching memory...');
               try {
                 const res = await API.get('/ai/memory');
-                alert(JSON.stringify(res.data.memory, null, 2));
+                showMessage('Memory loaded.');
+                console.log(res.data.memory); // log instead of blocking alert
               } catch (e) {
-                alert('Failed to load memory');
+                showMessage('Memory currently unavailable.');
               }
             }}
             className="w-full text-left p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors"
           >
-            <p className="text-white font-medium">View AI Memory</p>
+            <p className="text-white font-medium">View AI Memory (Console)</p>
             <p className="text-xs text-white/50 mt-1">See exactly what Moody remembers about you.</p>
           </button>
 
           <button 
             onClick={async () => {
+              showMessage('Preparing export...');
               try {
                 const res = await API.get('/ai/memory/export');
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res.data.data, null, 2));
@@ -153,8 +166,9 @@ const Settings: React.FC = () => {
                 document.body.appendChild(downloadAnchorNode); 
                 downloadAnchorNode.click();
                 downloadAnchorNode.remove();
+                showMessage('Export started.');
               } catch (e) {
-                alert('Failed to export data');
+                showMessage('Data export currently unavailable.');
               }
             }}
             className="w-full text-left p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors"
@@ -166,11 +180,12 @@ const Settings: React.FC = () => {
           <button 
             onClick={async () => {
               if (window.confirm("Are you sure you want to reset Moody's memory? This will delete all personalized context.")) {
+                showMessage('Resetting memory...');
                 try {
                   await API.delete('/ai/memory');
-                  alert('Memory reset successfully.');
+                  showMessage('Memory reset successfully.');
                 } catch (e) {
-                  alert('Failed to reset memory');
+                  showMessage('Failed to reset memory.');
                 }
               }
             }}
