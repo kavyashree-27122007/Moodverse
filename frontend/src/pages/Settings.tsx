@@ -57,7 +57,29 @@ const Settings: React.FC = () => {
           </div>
           <div>
             <p className="text-white/40 text-xs mb-1">AI Persona</p>
-            <p className="text-white font-medium">{user?.aiPersonality || 'Empathetic'}</p>
+            <select
+              value={user?.aiPersonality || 'Empathetic'}
+              onChange={async (e) => {
+                const newPersona = e.target.value;
+                try {
+                  const res = await API.put('/auth/profile', { aiPersonality: newPersona });
+                  const updatedUser = res.data;
+                  // Update local storage directly to reflect immediately 
+                  const localUser = JSON.parse(localStorage.getItem('mv_user') || '{}');
+                  localStorage.setItem('mv_user', JSON.stringify({ ...localUser, ...updatedUser }));
+                  showMessage('AI Persona updated! Refreshing...');
+                  setTimeout(() => window.location.reload(), 1000);
+                } catch (err) {
+                  showMessage('Failed to update persona.');
+                }
+              }}
+              className="bg-white/10 border border-white/20 text-white text-sm rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-accent w-full"
+            >
+              <option value="Empathetic" className="bg-background">Empathetic</option>
+              <option value="Analytical" className="bg-background">Analytical</option>
+              <option value="Cheerleader" className="bg-background">Cheerleader</option>
+              <option value="Stoic" className="bg-background">Stoic</option>
+            </select>
           </div>
         </div>
       </motion.div>

@@ -180,18 +180,28 @@ const FriendsList: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Chat Toggle Button */}
-                      <button 
-                        onClick={() => toggleChat(friend)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
-                          isChatting
-                            ? 'bg-accent text-white shadow-accent/30'
-                            : 'bg-accent/20 hover:bg-accent text-accent hover:text-white'
-                        }`}
-                      >
-                        <MessageCircle size={14} />
-                        <span>{isChatting ? 'Close' : 'Chat'}</span>
-                      </button>
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => socket?.sendHug?.(friend._id, friend.fullName)}
+                          className="px-2 py-1.5 rounded-xl text-xs font-bold bg-pink-500/20 text-pink-400 hover:bg-pink-500 hover:text-white transition-all shadow-sm flex items-center gap-1"
+                          title="Send Virtual Hug"
+                        >
+                          🫂 Hug
+                        </button>
+                        
+                        <button 
+                          onClick={() => toggleChat(friend)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+                            isChatting
+                              ? 'bg-accent text-white shadow-accent/30'
+                              : 'bg-accent/20 hover:bg-accent text-accent hover:text-white'
+                          }`}
+                        >
+                          <MessageCircle size={14} />
+                          <span>{isChatting ? 'Close' : 'Chat'}</span>
+                        </button>
+                      </div>
                     </motion.div>
                   );
                 })

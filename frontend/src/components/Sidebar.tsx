@@ -11,6 +11,7 @@ import {
   LogOut,
   Headphones,
   Film,
+  Wind
 } from 'lucide-react';
 
 const navItems = [
@@ -18,6 +19,7 @@ const navItems = [
   { icon: BarChart3, label: 'Analytics', to: '/analytics' },
   { icon: Headphones, label: 'Music', to: '/music' },
   { icon: Film, label: 'Movies', to: '/movies' },
+  { icon: Wind, label: 'Breathe', to: '/breathe' },
   { icon: Users, label: 'Friends', to: '/friends' },
   { icon: BookOpen, label: 'Journal', to: '/journal' },
   { icon: Bell, label: 'Notifications', to: '/notifications' },
@@ -141,8 +143,8 @@ const Sidebar: React.FC = () => {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/95 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around px-1">
-        {navItems.filter(i => ['/dashboard', '/music', '/movies', '/journal', '/settings'].includes(i.to)).map((item) => (
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/95 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around px-1 overflow-x-auto">
+        {navItems.filter(i => ['/dashboard', '/music', '/movies', '/breathe', '/journal', '/settings'].includes(i.to)).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

@@ -22,6 +22,7 @@ const Journal        = lazy(() => import('./pages/Journal'));
 const Notifications  = lazy(() => import('./pages/Notifications'));
 const Settings       = lazy(() => import('./pages/Settings'));
 const Achievements   = lazy(() => import('./pages/Achievements'));
+const Breathe        = lazy(() => import('./pages/Breathe'));
 
 // Fallback UI
 const PageLoader = () => (
@@ -61,6 +62,7 @@ function App() {
                       }
                     >
                       <Route path="/dashboard"     element={<Dashboard />} />
+                      <Route path="/breathe"       element={<Breathe />} />
                       <Route path="/analytics"     element={<Analytics />} />
                       <Route path="/friends"       element={<Friends />} />
                       <Route path="/music"         element={<Music />} />

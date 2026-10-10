@@ -32,6 +32,7 @@ interface SocketContextType {
   notifications: AppNotification[];
   broadcastMood: (emotion: string, intensity: number) => void;
   sendChatMessage: (to: string, message: string) => void;
+  sendHug: (to: string, friendName: string) => void;
   markNotificationAsRead: (id: string) => void;
 }
 
@@ -128,6 +129,18 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }, ...prev]);
     });
 
+    // Receive a virtual hug
+    socket.on('chat:hug', (data: { from: string, fromName: string }) => {
+      setNotifications((prev) => [{
+        id: Date.now().toString(),
+        type: 'system',
+        title: '🫂 Virtual Hug Received!',
+        message: `${data.fromName} sent you a warm hug!`,
+        timestamp: new Date().toISOString(),
+        read: false
+      }, ...prev]);
+    });
+
     return () => {
       socket.disconnect();
       socketRef.current = null;
@@ -154,6 +167,22 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setChatMessages((prev) => [...prev, msg]);
   };
 
+  const sendHug = (to: string, friendName: string) => {
+    if (socketRef.current && user) {
+      socketRef.current.emit('chat:hug', { to, from: user._id, fromName: user.fullName });
+      
+      // Local notification for self
+      setNotifications((prev) => [{
+        id: Date.now().toString(),
+        type: 'system',
+        title: 'Hug Sent!',
+        message: `You sent a virtual hug to ${friendName} 🫂`,
+        timestamp: new Date().toISOString(),
+        read: false
+      }, ...prev]);
+    }
+  };
+
   const markNotificationAsRead = (id: string) => {
     setNotifications((prev) => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
@@ -167,6 +196,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         notifications,
         broadcastMood,
         sendChatMessage,
+        sendHug,
         markNotificationAsRead
       }}
     >

@@ -99,3 +99,21 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: 'Server error retrieving profile' });
   }
 };
+
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { aiPersonality } = req.body;
+    const user = await User.findById((req as any).user._id);
+    
+    if (user) {
+      if (aiPersonality) user.aiPersonality = aiPersonality;
+      await user.save();
+      const updatedUser = await User.findById(user._id).select('-passwordHash').lean();
+      res.json(updatedUser);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating profile' });
+  }
+};

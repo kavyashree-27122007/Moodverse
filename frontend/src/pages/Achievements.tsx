@@ -3,11 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { Trophy, Flame, Zap, Star, Lock } from 'lucide-react';
 
 const allAchievements = [
-  { id: 'First Log', label: 'First Log', description: 'Logged your very first mood', icon: Star, color: 'text-yellow-400', bg: 'bg-yellow-400/20', points: 10 },
-  { id: '3-Day Streak', label: '3-Day Streak', description: 'Logged moods 3 days in a row', icon: Flame, color: 'text-orange-400', bg: 'bg-orange-400/20', points: 30 },
-  { id: '7-Day Streak', label: '7-Day Streak', description: 'Logged moods 7 days in a row', icon: Flame, color: 'text-red-400', bg: 'bg-red-400/20', points: 70 },
-  { id: 'Chatty', label: 'Chatty', description: 'Sent your first message to a friend', icon: Zap, color: 'text-blue-400', bg: 'bg-blue-400/20', points: 20 },
-  { id: 'Zen Master', label: 'Zen Master', description: 'Logged Calm mood 5 times', icon: Trophy, color: 'text-green-400', bg: 'bg-green-400/20', points: 50 },
+  { id: 'First Log 🌱', label: 'First Log', description: 'Logged your very first mood', icon: Star, color: 'text-yellow-400', bg: 'bg-yellow-400/20', points: 10 },
+  { id: '3-Day Streak 🔥', label: '3-Day Streak', description: 'Logged moods 3 days in a row', icon: Flame, color: 'text-orange-400', bg: 'bg-orange-400/20', points: 30 },
+  { id: '7-Day Streak 🌟', label: '7-Day Streak', description: 'Logged moods 7 days in a row', icon: Flame, color: 'text-red-400', bg: 'bg-red-400/20', points: 70 },
+  { id: 'Mood Master 👑', label: 'Mood Master', description: 'Logged moods 30 days in a row', icon: Trophy, color: 'text-purple-400', bg: 'bg-purple-400/20', points: 300 },
+  { id: '500 Points Club 💎', label: '500 Points Club', description: 'Earned 500 XP Points', icon: Zap, color: 'text-cyan-400', bg: 'bg-cyan-400/20', points: 50 },
 ];
 
 const Achievements: React.FC = () => {

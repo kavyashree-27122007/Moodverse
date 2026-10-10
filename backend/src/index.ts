@@ -72,6 +72,14 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Handle virtual hugs
+  socket.on('chat:hug', (data: { to: string; from: string; fromName: string }) => {
+    const recipientSocketId = onlineUsers.get(data.to);
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit('chat:hug', data);
+    }
+  });
+
   // Handle disconnect
   socket.on('disconnect', () => {
     // Remove from online users map

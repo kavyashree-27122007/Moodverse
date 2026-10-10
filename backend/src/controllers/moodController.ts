@@ -26,22 +26,39 @@ export const logMood = async (req: Request, res: Response): Promise<void> => {
     if (user) {
       user.points = (user.points || 0) + 10;
       
-      // Simple Streak Logic: Assume +1 per log, reset if needed in a background job
-      // or just increment if they haven't logged today.
-      const today = new Date().setHours(0,0,0,0);
-      const lastUpdated = user.updatedAt ? new Date(user.updatedAt).setHours(0,0,0,0) : 0;
+      const today = new Date();
+      today.setHours(0,0,0,0);
       
-      if (today > lastUpdated) {
+      // We need to check the last mood entry before this one to accurately calculate streaks
+      // Or we can just use the user's last updated time if we only update user on mood logs.
+      // But better: use the date.
+      const lastUpdatedDate = user.updatedAt ? new Date(user.updatedAt) : new Date(0);
+      lastUpdatedDate.setHours(0,0,0,0);
+      
+      const timeDiff = today.getTime() - lastUpdatedDate.getTime();
+      const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+      
+      if (daysDiff === 1) {
+        // Logged consecutive day
         user.currentStreak = (user.currentStreak || 0) + 1;
+      } else if (daysDiff > 1) {
+        // Missed a day, reset streak
+        user.currentStreak = 1; 
+      } else if (user.currentStreak === 0) {
+        // First log ever
+        user.currentStreak = 1;
       }
       
       // Achievements check
-      if (user.points === 10 && !user.achievements.includes('First Log')) {
-        user.achievements.push('First Log');
-      }
-      if (user.currentStreak === 3 && !user.achievements.includes('3-Day Streak')) {
-        user.achievements.push('3-Day Streak');
-      }
+      const newAchievements = new Set(user.achievements);
+      
+      if (user.points >= 10) newAchievements.add('First Log 🌱');
+      if (user.currentStreak >= 3) newAchievements.add('3-Day Streak 🔥');
+      if (user.currentStreak >= 7) newAchievements.add('7-Day Streak 🌟');
+      if (user.currentStreak >= 30) newAchievements.add('Mood Master 👑');
+      if (user.points >= 500) newAchievements.add('500 Points Club 💎');
+      
+      user.achievements = Array.from(newAchievements);
       
       await user.save();
     }
