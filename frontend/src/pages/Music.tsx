@@ -15,7 +15,7 @@ interface Track {
   url: string;
 }
 
-const EMOTIONS = ['Love', 'Happy', 'Sad', 'Angry', 'Calm', 'Motivated', 'Nostalgic', 'Excited'];
+const EMOTIONS = ['Happy', 'Sad', 'Love', 'Angry', 'Calm', 'Motivated', 'Nostalgic', 'Excited', 'Anxious', 'Relaxed', 'Confident', 'Neutral'];
 const LANGUAGES = ['All', 'Tamil', 'English', 'Hindi', 'Telugu'];
 
 // Helper for Unsplash photos
@@ -107,11 +107,38 @@ const FALLBACK_TRACKS: Record<string, Omit<Track, 'id' | 'mood'>[]> = {
     { name: 'Private Party',       artist: 'Anirudh, Jonita (Don)',               genre: 'Party Anthem',     language: 'Tamil',   artwork: usp('1516450360452-9312f5e86fc7'), url: '' },
     { name: 'Uptown Funk',         artist: 'Mark Ronson ft. Bruno Mars',          genre: 'Funk Pop Groove',  language: 'English', artwork: usp('1501386761578-eac5c94b800a'), url: '' },
     { name: 'Dippam Dappam',       artist: 'Anirudh (KRK)',                       genre: 'Kuthu Pop',        language: 'Tamil',   artwork: usp('1498038432885-c6f3f1b912ee'), url: '' },
+  ],
+  Anxious: [
+    { name: 'Breathe Me',          artist: 'Sia (Colour the Small One)',          genre: 'Gentle Calming',   language: 'English', artwork: usp('1477233134080-a57e02d1c5c6'), url: '' },
+    { name: 'Enna Solla',          artist: 'Anirudh (Thanga Magan)',              genre: 'Soothing Melancholy',language: 'Tamil', artwork: usp('1518199266791-5375a83190b7'), url: '' },
+    { name: 'Kun Faya Kun',        artist: 'A.R. Rahman, Mohit Chauhan (Rockstar)',genre: 'Spiritual Peace',  language: 'Hindi',   artwork: usp('1506905925346-21bda4d32df4'), url: '' },
+    { name: 'Strawberry Swing',    artist: 'Coldplay (Viva la Vida)',             genre: 'Acoustic Calm',    language: 'English', artwork: usp('1459749411175-04bf5292ceea'), url: '' },
+    { name: 'Moongil Thottam',     artist: 'A.R. Rahman (Kadal)',                 genre: 'Nature Peace',     language: 'Tamil',   artwork: usp('1511379938547-c1f69419868d'), url: '' },
+  ],
+  Relaxed: [
+    { name: 'Sunday Best',         artist: 'Surfaces',                            genre: 'Sunshine Chill',   language: 'English', artwork: usp('1516450360452-9312f5e86fc7'), url: '' },
+    { name: 'Bae',                 artist: 'Anirudh Ravichander (Don)',           genre: 'Lo-Fi Chill Pop',  language: 'Tamil',   artwork: usp('1492684223066-81342ee5ff30'), url: '' },
+    { name: 'Dil Dhadakne Do',     artist: 'Priyanka Chopra, Farhan Akhtar',      genre: 'Breeze Pop',       language: 'Hindi',   artwork: usp('1514525253161-7a46d19cd819'), url: '' },
+    { name: 'Better Together',     artist: 'Jack Johnson',                        genre: 'Acoustic Guitar',  language: 'English', artwork: usp('1485846234645-a62644f84728'), url: '' },
+    { name: 'Thaarame Thaarame',   artist: 'Sid Sriram (Kadaram Kondan)',         genre: 'Smooth Melody',    language: 'Tamil',   artwork: usp('1493225457124-a3eb161ffa5f'), url: '' },
+  ],
+  Confident: [
+    { name: 'Unstoppable',         artist: 'Sia',                                 genre: 'Empowerment Pop',  language: 'English', artwork: usp('1534447677768-be436bb09401'), url: '' },
+    { name: 'Vaathi Coming',       artist: 'Anirudh Ravichander (Master)',        genre: 'Mass Swagger',     language: 'Tamil',   artwork: usp('1508700115892-45ecd05ae2ad'), url: '' },
+    { name: 'Swag Se Swagat',      artist: 'Vishal-Shekhar (Tiger Zinda Hai)',    genre: 'Groove Hype',      language: 'Hindi',   artwork: usp('1517649763962-0c623266e804'), url: '' },
+    { name: 'Stronger',            artist: 'Kanye West',                          genre: 'Electronic HipHop',language: 'English', artwork: usp('1509198397868-475647b2a1e5'), url: '' },
+    { name: 'KGF Monster Track',   artist: 'Ravi Basrur (KGF)',                   genre: 'Epic Energy',      language: 'Kannada / Tamil', artwork: usp('1579783902614-a3fb3927b675'), url: '' },
+  ],
+  Neutral: [
+    { name: 'Sunflower',           artist: 'Post Malone, Swae Lee',               genre: 'Vibe Chill',       language: 'English', artwork: usp('1514525253161-7a46d19cd819'), url: '' },
+    { name: 'Maruvaarthai',        artist: 'Sid Sriram (ENPT)',                   genre: 'Balanced Melody',  language: 'Tamil',   artwork: usp('1493225457124-a3eb161ffa5f'), url: '' },
+    { name: 'Pee Loon',            artist: 'Mohit Chauhan (Once Upon a Time)',    genre: 'Soft Sufi',        language: 'Hindi',   artwork: usp('1506905925346-21bda4d32df4'), url: '' },
+    { name: 'Midnight City',       artist: 'M83',                                 genre: 'Dream Electro',    language: 'English', artwork: usp('1470229722913-7c0e2dbbafd3'), url: '' },
   ]
 };
 
 const Music: React.FC = () => {
-  const { currentEmotion } = useTheme();
+  const { currentEmotion, setEmotion } = useTheme();
   const [selectedEmotion, setSelectedEmotion] = useState<string>(currentEmotion || 'Happy');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -125,6 +152,11 @@ const Music: React.FC = () => {
       setSelectedEmotion(currentEmotion);
     }
   }, [currentEmotion]);
+
+  const handleMoodSelect = (emo: string) => {
+    setSelectedEmotion(emo);
+    setEmotion(emo as any);
+  };
 
   const buildTracks = (rawTracks: any[]): Track[] =>
     rawTracks.map((t, i) => ({
@@ -227,7 +259,7 @@ const Music: React.FC = () => {
           {EMOTIONS.map((emo) => (
             <button
               key={emo}
-              onClick={() => setSelectedEmotion(emo)}
+              onClick={() => handleMoodSelect(emo)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                 selectedEmotion === emo
                   ? 'bg-accent text-white shadow-lg shadow-accent/30 scale-105'

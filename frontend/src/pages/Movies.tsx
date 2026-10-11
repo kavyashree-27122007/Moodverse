@@ -14,7 +14,7 @@ interface Movie {
   poster?: string;
 }
 
-const EMOTIONS = ['Love', 'Happy', 'Sad', 'Angry', 'Calm', 'Motivated', 'Nostalgic', 'Excited'];
+const EMOTIONS = ['Happy', 'Sad', 'Love', 'Angry', 'Calm', 'Motivated', 'Nostalgic', 'Excited', 'Anxious', 'Relaxed', 'Confident', 'Neutral'];
 const LANGUAGES = ['All', 'Tamil', 'English', 'Hindi', 'Telugu', 'Malayalam'];
 
 // Helper for Unsplash photos
@@ -93,11 +93,34 @@ const FALLBACK_MOVIES: Record<string, Movie[]> = {
     { title: 'Top Gun: Maverick',   genre: 'High Flying Thrills',    language: 'English',     rating: '8.2', year: '2022', streamOn: 'Prime',   poster: usp('1509198397868-475647b2a1e5') },
     { title: 'Jawan',               genre: 'Mass Action Thriller',   language: 'Hindi / Tamil', rating: '7.0', year: '2023', streamOn: 'Netflix', poster: usp('1529626455594-4ff0802cfb7e') },
     { title: 'KGF: Chapter 2',      genre: 'Power Action Riot',      language: 'Kannada / Tamil', rating: '8.3', year: '2022', streamOn: 'Prime', poster: usp('1579783902614-a3fb3927b675') },
+  ],
+  Anxious: [
+    { title: 'A Beautiful Mind',    genre: 'Mental Resilience',      language: 'English',     rating: '8.2', year: '2001', streamOn: 'Prime',   poster: usp('1477233134080-a57e02d1c5c6') },
+    { title: 'Dear Zindagi',        genre: 'Mental Wellness / Life', language: 'Hindi',       rating: '7.6', year: '2016', streamOn: 'Netflix', poster: usp('1518199266791-5375a83190b7') },
+    { title: 'Good Night',          genre: 'Stress Relief Slice of Life',language: 'Tamil',   rating: '8.0', year: '2023', streamOn: 'Hotstar', poster: usp('1626785774573-4b799315345d') },
+    { title: 'Inside Out 2',        genre: 'Emotional Understanding',language: 'English',     rating: '7.8', year: '2024', streamOn: 'Hotstar', poster: usp('1534447677768-be436bb09401') },
+  ],
+  Relaxed: [
+    { title: 'Before Sunrise',      genre: 'Gentle Walk & Talk',     language: 'English',     rating: '8.1', year: '1995', streamOn: 'Prime',   poster: usp('1459749411175-04bf5292ceea') },
+    { title: 'Piku',                genre: 'Warm Family Journey',    language: 'Hindi',       rating: '7.6', year: '2015', streamOn: 'SonyLIV', poster: usp('1485846234645-a62644f84728') },
+    { title: 'Thiruchitrambalam',   genre: 'Comfort Food Cinema',    language: 'Tamil',       rating: '8.0', year: '2022', streamOn: 'SunNXT',  poster: usp('1470225620780-dba8ba36b745') },
+    { title: 'Chef',                genre: 'Delicious Feel-Good',    language: 'English',     rating: '7.3', year: '2014', streamOn: 'Netflix', poster: usp('1514525253161-7a46d19cd819') },
+  ],
+  Confident: [
+    { title: 'Limitless',           genre: 'Focus & Ambition',       language: 'English',     rating: '7.4', year: '2011', streamOn: 'Netflix', poster: usp('1509198397868-475647b2a1e5') },
+    { title: 'Master',              genre: 'Pure Swagger & Mass',    language: 'Tamil',       rating: '7.9', year: '2021', streamOn: 'Prime',   poster: usp('1508700115892-45ecd05ae2ad') },
+    { title: 'Gully Boy',           genre: 'Self Belief Underdog',   language: 'Hindi',       rating: '7.9', year: '2019', streamOn: 'Prime',   poster: usp('1534447677768-be436bb09401') },
+    { title: 'The Wolf of Wall Street', genre: 'High Drive & Power', language: 'English',     rating: '8.2', year: '2013', streamOn: 'Prime',   poster: usp('1517649763962-0c623266e804') },
+  ],
+  Neutral: [
+    { title: 'Inception',           genre: 'Mind-Bending Mystery',   language: 'English',     rating: '8.8', year: '2010', streamOn: 'Netflix', poster: usp('1506905925346-21bda4d32df4') },
+    { title: 'Anbe Sivam',          genre: 'Philosophy & Humanism',  language: 'Tamil',       rating: '8.7', year: '2003', streamOn: 'Prime',   poster: usp('1511379938547-c1f69419868d') },
+    { title: 'Swades',              genre: 'Purposeful Journey',     language: 'Hindi',       rating: '8.2', year: '2004', streamOn: 'Netflix', poster: usp('1489599849927-2ee91cede3ba') },
   ]
 };
 
 const Movies: React.FC = () => {
-  const { currentEmotion } = useTheme();
+  const { currentEmotion, setEmotion } = useTheme();
   const [selectedEmotion, setSelectedEmotion] = useState<string>(currentEmotion || 'Happy');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -109,6 +132,11 @@ const Movies: React.FC = () => {
       setSelectedEmotion(currentEmotion);
     }
   }, [currentEmotion]);
+
+  const handleMoodSelect = (emo: string) => {
+    setSelectedEmotion(emo);
+    setEmotion(emo as any);
+  };
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -202,7 +230,7 @@ const Movies: React.FC = () => {
           {EMOTIONS.map((emo) => (
             <button
               key={emo}
-              onClick={() => setSelectedEmotion(emo)}
+              onClick={() => handleMoodSelect(emo)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                 selectedEmotion === emo
                   ? 'bg-accent text-white shadow-lg shadow-accent/30 scale-105'
