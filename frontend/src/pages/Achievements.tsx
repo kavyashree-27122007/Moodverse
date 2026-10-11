@@ -6,14 +6,25 @@ const allAchievements = [
   { id: 'First Log 🌱', label: 'First Log', description: 'Logged your very first mood', icon: Star, color: 'text-yellow-400', bg: 'bg-yellow-400/20', points: 10 },
   { id: '3-Day Streak 🔥', label: '3-Day Streak', description: 'Logged moods 3 days in a row', icon: Flame, color: 'text-orange-400', bg: 'bg-orange-400/20', points: 30 },
   { id: '7-Day Streak 🌟', label: '7-Day Streak', description: 'Logged moods 7 days in a row', icon: Flame, color: 'text-red-400', bg: 'bg-red-400/20', points: 70 },
+  { id: 'Zen Master 🧘', label: 'Zen Master', description: 'Took time to breathe & meditate', icon: Trophy, color: 'text-emerald-400', bg: 'bg-emerald-400/20', points: 50 },
   { id: 'Mood Master 👑', label: 'Mood Master', description: 'Logged moods 30 days in a row', icon: Trophy, color: 'text-purple-400', bg: 'bg-purple-400/20', points: 300 },
   { id: '500 Points Club 💎', label: '500 Points Club', description: 'Earned 500 XP Points', icon: Zap, color: 'text-cyan-400', bg: 'bg-cyan-400/20', points: 50 },
 ];
 
 const Achievements: React.FC = () => {
   const { user } = useAuth();
-  const unlocked = new Set<string>((user?.achievements as string[]) || []);
+  const rawAchievements = (user?.achievements as string[]) || [];
   const totalPoints = user?.points || 0;
+
+  // Flexible matcher: matches exact ID, label, or substring
+  const isAchievementUnlocked = (ach: typeof allAchievements[0]) => {
+    return rawAchievements.some((saved) => {
+      const s = saved.toLowerCase().trim();
+      const id = ach.id.toLowerCase().trim();
+      const label = ach.label.toLowerCase().trim();
+      return s === id || s === label || s.includes(label) || id.includes(s);
+    });
+  };
 
   return (
     <div className="p-8 space-y-8 pb-20">
@@ -47,7 +58,7 @@ const Achievements: React.FC = () => {
       {/* Achievements Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {allAchievements.map((ach, i) => {
-          const isUnlocked = unlocked.has(ach.id);
+          const isUnlocked = isAchievementUnlocked(ach);
           return (
             <motion.div
               key={ach.id}

@@ -1,6 +1,7 @@
 import { useState, useMemo, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingUp, Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sparkles, TrendingUp, Activity, Trophy } from 'lucide-react';
 import MoodInput from '../components/MoodInput';
 import MoodChart from '../components/MoodChart';
 import FriendsList from '../components/FriendsList';
@@ -15,23 +16,43 @@ const getGreetingTime = () => {
   return 'Good Evening';
 };
 
-const StatCard = memo(({ stat, i }: { stat: { label: string; value: string; icon: any; color: string }; i: number }) => (
-  <motion.div
-    key={stat.label}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.1 * i }}
-    className="bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 flex items-center gap-4"
-  >
-    <div className={`p-3 rounded-xl bg-white/5 ${stat.color}`}>
-      <stat.icon size={20} />
-    </div>
-    <div>
-      <p className="text-white/50 text-xs">{stat.label}</p>
-      <p className="text-white text-lg font-semibold">{stat.value}</p>
-    </div>
-  </motion.div>
-));
+interface StatItem {
+  label: string;
+  value: string;
+  icon: any;
+  color: string;
+  to?: string;
+}
+
+const StatCard = memo(({ stat, i }: { stat: StatItem; i: number }) => {
+  const content = (
+    <motion.div
+      key={stat.label}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={stat.to ? { y: -3, scale: 1.02 } : undefined}
+      transition={{ delay: 0.1 * i }}
+      className={`bg-surface/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 flex items-center justify-between ${
+        stat.to ? 'hover:border-accent/40 hover:shadow-lg hover:shadow-accent/10 cursor-pointer transition-all' : ''
+      }`}
+    >
+      <div className="flex items-center gap-4">
+        <div className={`p-3 rounded-xl bg-white/5 ${stat.color}`}>
+          <stat.icon size={20} />
+        </div>
+        <div>
+          <p className="text-white/50 text-xs">{stat.label}</p>
+          <p className="text-white text-lg font-semibold">{stat.value}</p>
+        </div>
+      </div>
+      {stat.to && (
+        <span className="text-[11px] text-accent/80 font-medium hidden sm:inline-block">View →</span>
+      )}
+    </motion.div>
+  );
+
+  return stat.to ? <Link to={stat.to} className="block">{content}</Link> : content;
+});
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -40,11 +61,11 @@ const Dashboard: React.FC = () => {
 
   const greeting = useMemo(() => getGreetingTime(), []);
 
-  const stats = useMemo(() => [
+  const stats = useMemo<StatItem[]>(() => [
     { label: 'Current Mood', value: currentEmotion, icon: Activity, color: 'text-accent' },
-    { label: 'Streak', value: `${user?.currentStreak || 0} Days`, icon: TrendingUp, color: 'text-green-400' },
-    { label: 'Total Points', value: `${user?.points || 0} ✨`, icon: Sparkles, color: 'text-yellow-400' },
-    { label: 'AI Persona', value: user?.aiPersonality || 'Empathetic', icon: Activity, color: 'text-purple-400' },
+    { label: 'Streak', value: `${user?.currentStreak || 0} Days`, icon: TrendingUp, color: 'text-green-400', to: '/achievements' },
+    { label: 'Total Points', value: `${user?.points || 0} ✨`, icon: Sparkles, color: 'text-yellow-400', to: '/achievements' },
+    { label: 'AI Persona', value: user?.aiPersonality || 'Empathetic', icon: Activity, color: 'text-purple-400', to: '/settings' },
   ], [currentEmotion, user?.currentStreak, user?.points, user?.aiPersonality]);
 
   const { setMascotState, showMessage } = useMascot();
@@ -72,6 +93,13 @@ const Dashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            to="/achievements"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-all text-sm font-semibold shadow-lg shadow-amber-500/10"
+          >
+            <Trophy size={16} className="text-amber-400" />
+            <span>Badges & XP</span>
+          </Link>
           <motion.button
             animate={{ scale: [1, 1.15, 1] }}
             transition={{ duration: 2, repeat: Infinity }}

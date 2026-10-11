@@ -11,12 +11,14 @@ import {
   LogOut,
   Headphones,
   Film,
-  Wind
+  Wind,
+  Trophy
 } from 'lucide-react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
   { icon: BarChart3, label: 'Analytics', to: '/analytics' },
+  { icon: Trophy, label: 'Achievements', to: '/achievements' },
   { icon: Headphones, label: 'Music', to: '/music' },
   { icon: Film, label: 'Movies', to: '/movies' },
   { icon: Wind, label: 'Breathe', to: '/breathe' },
@@ -48,8 +50,15 @@ const Sidebar: React.FC = () => {
           </div>
           <span className="text-white font-bold text-sm">MoodVerse</span>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-accent/30 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <NavLink
+            to="/achievements"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold hover:bg-amber-500/25 transition-all"
+          >
+            <Trophy size={14} className="text-amber-400" />
+            <span>{user?.points || 0} XP</span>
+          </NavLink>
+          <div className="w-8 h-8 rounded-full bg-accent/30 flex items-center justify-center flex-shrink-0 border border-accent/40">
             <span className="text-accent text-xs font-bold">
               {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
             </span>
@@ -144,7 +153,7 @@ const Sidebar: React.FC = () => {
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/95 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around px-1 overflow-x-auto">
-        {navItems.filter(i => ['/dashboard', '/music', '/movies', '/breathe', '/journal', '/settings'].includes(i.to)).map((item) => (
+        {navItems.filter(i => ['/dashboard', '/music', '/movies', '/achievements', '/breathe', '/journal', '/settings'].includes(i.to)).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
